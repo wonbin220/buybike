@@ -17,16 +17,19 @@ public class BoardRepositoryImpl implements BoardRepository {
         board1.setBoardId(1L);
         board1.setTitle("Board 1");
         board1.setContent("Content for Board 1");
+        board1.setFileName("bike1.jpg");
         ;
         Board board2 = new Board();
         board2.setBoardId(2L);
         board2.setTitle("Board 2");
         board2.setContent("Content for Board 2");
+        board2.setFileName("bike2.jpg");
 
         Board board3 = new Board();
         board3.setBoardId(3L);
         board3.setTitle("Board 3");
         board3.setContent("Content for Board 3");
+        board3.setFileName("bike3.jpg");
 
         listofBoards.add(board1);
         listofBoards.add(board2);
@@ -51,5 +54,10 @@ public class BoardRepositoryImpl implements BoardRepository {
             throw new IllegalArgumentException("게시판ID가 " + boardId + "인 해당 게시판 글을 찾을 수 없습니다.");
             return boardInfo;
 
+    }
+
+    @Override
+    public void setNewBoard(Board board) {
+        listofBoards.add(board);
     }
 }

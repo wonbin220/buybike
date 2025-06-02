@@ -7,4 +7,5 @@ import java.util.List;
 public interface BoardRepository {
     List<Board> getAllBoardList();
     Board getBoardById(Long boardId);
+    void setNewBoard(Board board);
 }

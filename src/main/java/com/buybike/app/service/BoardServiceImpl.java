@@ -20,11 +20,13 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     public Board getBoardById(Long boardId) {
-        return getBoard(boardId);
-    }
-
-    private Board getBoard(Long boardId) {
         Board boardById = boardRepository.getBoardById(boardId);
         return boardById;
     }
+
+    @Override
+    public void setNewBoard(Board board) {
+        boardRepository.setNewBoard(board);
+    }
+
 }
