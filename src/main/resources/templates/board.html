@@ -26,7 +26,10 @@
 
     <div class="row align-items-md-stretch">
         <div class="col-md-4">
-            <img th:src="'/BuyBike/images/'+${board.getFileName()}" style="width:90%"/>
+            <img th:src="'/BuyBike/upload/'+${board.getFileName()}" style="width:90%"/>
+            <div class="text-center">
+                <a th:href="@{download(file=${board.fileName})}" style="text-decoration-line: none">이미지 다운로드</a>
+            </div>
         </div>
         <div class="col-md-8">
             <h3 th:text ="${board.title}"></h3>
