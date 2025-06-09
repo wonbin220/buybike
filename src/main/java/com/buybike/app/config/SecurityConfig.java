@@ -22,15 +22,15 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    protected UserDetailsService users() {
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password(passwordEncoder().encode("admin1234"))
-                .roles("ADMIN")
-                .build();
-        return new InMemoryUserDetailsManager(admin);
-    }
+//    @Bean
+//    protected UserDetailsService users() {
+//        UserDetails admin = User.builder()
+//                .username("admin")
+//                .password(passwordEncoder().encode("admin1234"))
+//                .roles("ADMIN")
+//                .build();
+//        return new InMemoryUserDetailsManager(admin);
+//    }
 
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -43,10 +43,11 @@ public class SecurityConfig {
                 )
                 .formLogin(
                         formLogin -> formLogin
-                                .loginPage("/login")
+                                .loginPage("/login")                                    // 사용자 정의 로그인 페이지
                                 .loginProcessingUrl("/login")
-                                .defaultSuccessUrl("/boards/add")
-                                .failureUrl("/loginfailed")
+                                .defaultSuccessUrl("/boards/add")                       // 관리자 로그인 성공 후 이동 페이지
+                                .defaultSuccessUrl("/")                                 // 사용자 로그인 후 이동 페이지
+                                .failureUrl("/loginfailed")          // 로그인 실패 후 이동 페이지
                                 .usernameParameter("username")
                                 .passwordParameter("password")
                 )
