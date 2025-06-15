@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.buybike.app.repository.MemberRepository">
+
+    <select id="findByMemberId" resultType="com.buybike.app.domain.Member">
+        SELECT * FROM member WHERE memberId = #{memberId}
+    </select>
+
+    <select id="findById" resultType="com.buybike.app.domain.Member">
+        SELECT * FROM member WHERE num = #{num}
+    </select>
+
+    <select id="findAll" resultType="com.buybike.app.domain.Member">
+        SELECT * FROM member
+    </select>
+
+    <insert id="insert" parameterType="com.buybike.app.domain.Member" useGeneratedKeys="true" keyProperty="num">
+        INSERT INTO member
+            (memberId, name, password, phone, email, address, regDt, role)
+        VALUES
+            (#{memberId}, #{name}, #{password}, #{phone}, #{email}, #{address}, now(), #{role})
+    </insert>
+
+    <update id="update" parameterType="com.buybike.app.domain.Member">
+        UPDATE member
+        SET
+            name = #{name},
+            password = #{password},
+            phone = #{phone},
+            email = #{email},
+            address = #{address},
+            regDt = #{regDt},
+            role = #{role}
+        WHERE num = #{num}
+    </update>
+
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM member WHERE num = #{num}
+    </delete>
+
+</mapper>

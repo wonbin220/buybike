@@ -21,7 +21,7 @@ public class Board {
     private String title;
     @NotEmpty(message = "내용을 입력해주세요.")
     private String content;
-    private User user;
+    private Member member;
     private int Hits; // 조회수
     private LocalDateTime regDt;
     private String fileName;

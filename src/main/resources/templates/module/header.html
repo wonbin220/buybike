@@ -8,19 +8,19 @@
             </svg>
         <span class="fs-4">BuyBike</span>
     </a>
-        <a sec:authorize="hasRole('ROLE_ADMIN')" href="/BookMarket/books/add"
+        <a sec:authorize="hasRole('ROLE_ADMIN')" href="/BuyBike/books/add"
            class="nav-link">도서등록 &nbsp;| &nbsp;</a>
-        <a sec:authorize="isAuthenticated()" href="/BookMarket/cart" class="nav-link">
+        <a sec:authorize="isAuthenticated()" href="/BuyBike/cart" class="nav-link">
             장바구니 &nbsp;| &nbsp;</a>
-        <a sec:authorize="hasRole('ROLE_ADMIN')" href="/BookMarket/order/list"
+        <a sec:authorize="hasRole('ROLE_ADMIN')" href="/BuyBike/order/list"
            class="nav-link">주문목록 &nbsp;| &nbsp;</a>
-        <a sec:authorize="isAnonymous()" href="/BookMarket/members/add" class="navlink">회원가입 &nbsp;| &nbsp;</a>-->
-        <a sec:authorize="isAnonymous()" href="/BookMarket/login" class="nav-link">로
+        <a sec:authorize="isAnonymous()" href="/BuyBike/members/add" class="navlink">회원가입 &nbsp;| &nbsp;</a>-->
+        <a sec:authorize="isAnonymous()" href="/BuyBike/login" class="nav-link">로
             그인 &nbsp;| &nbsp;</a>
-        <a sec:authorize="isAuthenticated()" th:href="'/BookMarket/members/
+        <a sec:authorize="isAuthenticated()" th:href="'/BuyBike/members/
 update/'+${session.userLoginInfo.memberId}" class="nav-link">회원수정 &nbsp;|
             &nbsp;</a>
-        <a sec:authorize="isAuthenticated()" href="/BookMarket/logout" class="navlink">로그아웃 &nbsp;| &nbsp;</a>
+        <a sec:authorize="isAuthenticated()" href="/BuyBike/logout" class="navlink">로그아웃 &nbsp;| &nbsp;</a>
         <b sec:authorize="isAuthenticated()"><span sec:authentication='name'></span>님
         </b>
 
