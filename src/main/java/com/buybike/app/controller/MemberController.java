@@ -26,7 +26,7 @@ public class MemberController {
     // 신규 회원 등록페이지 출력하기
     @GetMapping(value = "/add")
     public String requestAddMemberForm(Model model) {
-        model.addAttribute("memberForm", new MemberFormDto());
+        model.addAttribute("memberFormDto", new MemberFormDto());
         return "member/addMember";
     }
     // 신규 회원 등록하기

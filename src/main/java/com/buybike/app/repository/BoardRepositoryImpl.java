@@ -1,15 +1,16 @@
 package com.buybike.app.repository;
 
 import com.buybike.app.domain.Board;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class BoardRepositoryImpl implements BoardRepository {
 
+    private SqlSessionTemplate sql;
     private List<Board> listofBoards = new ArrayList<Board>();
 
     public BoardRepositoryImpl() {

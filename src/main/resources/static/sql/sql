@@ -1,0 +1,11 @@
+create table user(
+num bigint primary key auto_increment,
+userId varchar(50) not null,
+username varchar(10) not null,
+password varchar(50),
+phone varchar(100),
+email varchar(100),
+address varchar(200),
+regDt datetime default now(),
+role ENUM('ADMIN', 'USER') not null default 'USER'
+);
