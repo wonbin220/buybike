@@ -20,16 +20,18 @@ public class AppApplication {
     @Bean
     public CommandLineRunner run(MemberService memberService) {
         return (String[] args) -> {
-            Member member = new Member();
-            member.setMemberId("Admin");
-            member.setName("관리자");
-            member.setPhone("");
-            member.setEmail("");
-            member.setAddress("");
-            String password = new BCryptPasswordEncoder().encode("admin1234");
-            member.setPassword(password);
-            member.setRole(Role.ADMIN);
-            memberService.saveMember(member);
+            if (!memberService.findByMemberId("Admin")) {
+                Member member = new Member();
+                member.setMemberId("Admin");
+                member.setName("관리자");
+                member.setPhone("");
+                member.setEmail("");
+                member.setAddress("");
+                String password = new BCryptPasswordEncoder().encode("admin1234");
+                member.setPassword(password);
+                member.setRole(Role.ADMIN);
+                memberService.saveMember(member);
+            }
         };
     }
 }

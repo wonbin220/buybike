@@ -53,4 +53,8 @@ public class MemberService implements UserDetailsService {
                 .roles(member.getRole().toString())
                 .build();
     }
+
+    public boolean findByMemberId(String memberId) {
+        return memberRepository.findByMemberId(memberId) != null;
+    }
 }
