@@ -1,8 +1,8 @@
-create table user(
+create table member(
 num bigint primary key auto_increment,
-userId varchar(50) not null,
-username varchar(10) not null,
-password varchar(50),
+memberId varchar(50) not null,
+memberName varchar(10) not null,
+password varchar(200),
 phone varchar(100),
 email varchar(100),
 address varchar(200),

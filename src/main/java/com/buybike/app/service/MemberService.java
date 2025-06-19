@@ -22,13 +22,17 @@ public class MemberService implements UserDetailsService {
         return memberRepository.insert(member);
     }
 
+    public int updateMember(Member member) { // 회원 정보 저장하기
+        return memberRepository.update(member);
+    }
+
     public Member getMemberById(String memberId) { // 회원 정보 가져오기
         Member member = memberRepository.findByMemberId(memberId);
         return member;
     }
     public void deleteMember(String memberId) { // 회원 삭제하기
         Member member = memberRepository.findByMemberId(memberId);
-        memberRepository.deleteById(member.getNum());
+        memberRepository.deleteById(member.getMemberId());
     }
 
     private void validateDuplicateMember(Member member) { // 회원 id 중복 체크하기

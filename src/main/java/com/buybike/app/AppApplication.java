@@ -23,7 +23,7 @@ public class AppApplication {
             if (!memberService.findByMemberId("Admin")) {
                 Member member = new Member();
                 member.setMemberId("Admin");
-                member.setName("관리자");
+                member.setMemberName("관리자");
                 member.setPhone("");
                 member.setEmail("");
                 member.setAddress("");

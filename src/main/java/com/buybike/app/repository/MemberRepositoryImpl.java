@@ -21,8 +21,8 @@ public class MemberRepositoryImpl implements MemberRepository{
     }
 
     @Override
-    public Member findById(Long id) {
-        return memberRepository.findById(id);
+    public Member findById(String memberId) {
+        return memberRepository.findById(memberId);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class MemberRepositoryImpl implements MemberRepository{
     }
 
     @Override
-    public int deleteById(Long id) {
-        return memberRepository.deleteById(id);
+    public int deleteById(String memberId) {
+        return memberRepository.deleteById(memberId);
     }
 }

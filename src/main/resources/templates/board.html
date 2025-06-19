@@ -2,11 +2,11 @@
 <head>
     <meta charset="UTF-8">
     <title>자전거 상세 정보</title>
-    <link href="/BuyBike/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="BuyBike/css/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body>
 <div class="container py-4">
-    <th:block th:replace="~{/module/header}"></th:block>
+    <th:block th:replace="~{module/header}"></th:block>
 
     <div class="p-5 mb-4 bg-body-tertiary rounded-3">
         <div class="container-fluid py-5">
@@ -17,7 +17,7 @@
 
     <div class="row align-items-md-stretch">
         <div class="col-md-4">
-            <img th:src="'/BuyBike/images/'+${board.getFileName()}" style="width:90%"/>
+            <img th:src="'BuyBike/images/'+${board.getFileName()}" style="width:90%"/>
             <div class="text-center">
                 <a th:href="@{download(file=${board.fileName})}" style="text-decoration-line: none">이미지 다운로드</a>
             </div>
@@ -30,7 +30,7 @@
 
             <br>
 			<p><a href="#" class="btn btn-primary">수정 &raquo;</a>
-			<a href="/BuyBike/boards" class="btn btn-secondary"> 목록 &raquo;</a>
+			<a href="BuyBike/boards" class="btn btn-secondary"> 목록 &raquo;</a>
 
 
 

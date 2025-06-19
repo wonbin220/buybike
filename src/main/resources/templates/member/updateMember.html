@@ -15,7 +15,7 @@
 </script>
 <body>
 <div class="container py-4">
-    <th:block th:replace="~{/module/header}"></th:block>
+    <th:block th:replace="~{module/header}"></th:block>
     <div class="p-5 mb-4 bg-body-tertiary rounded-3">
         <div class="container-fluid py-5">
             <h1 class="display-5 fw-bold">회원 수정</h1>
@@ -24,7 +24,7 @@
     </div>
     <div class="row align-items-md-stretch">
         <form th:object="${memberFormDto}" name="member" action="/BuyBike/members/update" method="post">
-            <legend>신규 회원 가입</legend>
+            <legend>회원 수정</legend>
             <div class="mb-3 row">
                 <label class="col-sm-2 control-label">회원 ID</label>
                 <div class="col-sm-3">
@@ -35,11 +35,11 @@
             <div class="mb-3 row">
                 <label class="col-sm-2 control-label">이름</label>
                 <div class="col-sm-3">
-                    <input type="text" name="name" class="form-control"
-                           th:field="*{name}"/>
+                    <input type="text" name="memberName" class="form-control"
+                           th:field="*{memberName}"/>
                 </div>
                 <div class="col-sm-6">
-                    <p class="text-danger" th:errors="*{name}"/>
+                    <p class="text-danger" th:errors="*{memberName}"/>
                 </div>
             </div>
             <div class="mb-3 row">
@@ -67,7 +67,7 @@
                     <p class="text-danger" th:errors="*{email}"/>
                 </div>
             </div>
-            class="mb-3 row">
+            <div class="mb-3 row">
             <label class="col-sm-2 control-label">전화번호</label>
             <div class="col-sm-3">
                 <input type="text" name="phone" class="form-control"
@@ -76,11 +76,10 @@
             <div class="col-sm-6">
                 <p class="text-danger" th:errors="*{phone}"/>
             </div>
-    </div>
     <div class="mb-3 row">
         <label class="col-sm-2 control-label">주소</label>
         <div class="col-sm-5">
-            <input type="text" name="address" cols="50" rows="2" class="formcontrol" th:field="*{address}"/>
+            <input type="text" name="address" cols="10" rows="2" class="formcontrol" th:field="*{address}"/>
         </div>
     </div>
     <div class="mb-3 row">
@@ -91,8 +90,10 @@
             <input type="reset" class="btn btn-Secondary" value ="취소"/>
         </div>
     </div>
+            </div>
     </form>
-    <th:block th:replace="~{/module/footer}"></th:block>
+    <th:block th:replace="~{module/footer}"></th:block>
+    </div>
 </div>
 </body>
 </html>

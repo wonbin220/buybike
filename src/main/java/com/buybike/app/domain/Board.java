@@ -1,10 +1,7 @@
 package com.buybike.app.domain;
 
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -12,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 public class Board {
 
@@ -26,4 +23,13 @@ public class Board {
     private LocalDateTime regDt;
     private String fileName;
     private MultipartFile boardImage; // 게시판 이미지
+
+    public Board(Long boardId, String title, String content, Member member) {
+        this.boardId = boardId;
+        this.title = title;
+        this.content = content;
+        this.member = member;
+        this.Hits = 0; // 초기 조회수는 0
+        this.regDt = LocalDateTime.now(); // 현재 시간으로 등록일시 설정
+    }
 }

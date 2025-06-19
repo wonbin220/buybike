@@ -14,7 +14,7 @@ public class Member {
 
     private Long num;
     private String memberId;
-    private String name;
+    private String memberName;
     private String password;
     private String phone;
     private String email;
@@ -25,7 +25,7 @@ public class Member {
     public static Member createMember(MemberFormDto memberFormDto, PasswordEncoder passwordEncoder) {
         Member member = new Member();
         member.setMemberId(memberFormDto.getMemberId());
-        member.setName(memberFormDto.getName());
+        member.setMemberName(memberFormDto.getMemberName());
         member.setPhone(memberFormDto.getPhone());
         member.setEmail(memberFormDto.getEmail());
         member.setAddress(memberFormDto.getAddress());

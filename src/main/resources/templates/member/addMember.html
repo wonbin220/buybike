@@ -15,7 +15,7 @@
 </script>
 <body>
 <div class="container py-4">
-    <th:block th:replace="~{/module/header}"></th:block>
+    <th:block th:replace="~{module/header}"></th:block>
     <div class="p-5 mb-4 bg-body-tertiary rounded-3">
         <div class="container-fluid py-5">
             <h1 class="display-5 fw-bold">회원 등록</h1>
@@ -38,10 +38,10 @@
             <div class="mb-3 row">
                 <label class="col-sm-2 control-label">이름</label>
                 <div class="col-sm-3">
-                    <input type="text" name="name" class="form-control" th:field="*{name}"/>
+                    <input type="text" name="name" class="form-control" th:field="*{memberName}"/>
                 </div>
                 <div class="col-sm-6">
-                    <p class="text-danger" th:errors="*{name}"/>
+                    <p class="text-danger" th:errors="*{memberName}"/>
                 </div>
             </div>
             <div class="mb-3 row">
@@ -93,7 +93,7 @@
                 </div>
             </div>
         </form>
-        <th:block th:replace="~{/module/footer}"></th:block>
+        <th:block th:replace="~{module/footer}"></th:block>
     </div>
 </body>
 </html>

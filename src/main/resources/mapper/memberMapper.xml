@@ -8,9 +8,9 @@
         SELECT * FROM member WHERE memberId = #{memberId}
     </select>
 
-    <select id="findById" resultType="com.buybike.app.domain.Member">
-        SELECT * FROM member WHERE num = #{num}
-    </select>
+<!--    <select id="findById" resultType="com.buybike.app.domain.Member">-->
+<!--        SELECT * FROM member WHERE num = #{num}-->
+<!--    </select>-->
 
     <select id="findAll" resultType="com.buybike.app.domain.Member">
         SELECT * FROM member
@@ -18,15 +18,15 @@
 
     <insert id="insert" parameterType="com.buybike.app.domain.Member" useGeneratedKeys="true" keyProperty="num">
         INSERT INTO member
-            (memberId, name, password, phone, email, address, regDt, role)
+            (memberId, memberName, password, phone, email, address, regDt, role)
         VALUES
-            (#{memberId}, #{name}, #{password}, #{phone}, #{email}, #{address}, now(), #{role})
+            (#{memberId}, #{memberName}, #{password}, #{phone}, #{email}, #{address}, now(), #{role})
     </insert>
 
     <update id="update" parameterType="com.buybike.app.domain.Member">
         UPDATE member
         SET
-            name = #{name},
+            memberName = #{memberName},
             password = #{password},
             phone = #{phone},
             email = #{email},
@@ -36,8 +36,8 @@
         WHERE num = #{num}
     </update>
 
-    <delete id="deleteById" parameterType="long">
-        DELETE FROM member WHERE num = #{num}
+    <delete id="deleteById" parameterType="com.buybike.app.domain.Member">
+        DELETE FROM member WHERE memberId = #{memberId}
     </delete>
 
 </mapper>

@@ -61,15 +61,28 @@ public class MemberController {
             return "member/updateMember";
         }
         try {
-            Member member = Member.createMember(memberFormDto, passwordEncoder);
-            memberService.saveMember(member);
+            // 기존 회원 조회
+            Member existingMember = memberService.getMemberById(memberFormDto.getMemberId());
+            if (existingMember == null) {
+                model.addAttribute("errorMessage", "존재하지 않는 회원입니다.");
+                return "member/updateMember";
+            }
+            // 필요한 필드만 업데이트
+            existingMember.setMemberName(memberFormDto.getMemberName());
+            existingMember.setEmail(memberFormDto.getEmail());
+            existingMember.setPhone(memberFormDto.getPhone());
+            existingMember.setAddress(memberFormDto.getAddress());
+            // 비밀번호 변경이 필요한 경우만 처리
+            if (memberFormDto.getPassword() != null && !memberFormDto.getPassword().isEmpty()) {
+                existingMember.setPassword(passwordEncoder.encode(memberFormDto.getPassword()));
+            }
+            memberService.updateMember(existingMember);
         } catch (IllegalStateException e) {
             model.addAttribute("errorMessage", e.getMessage());
-            return "member/addMember";
+            return "member/updateMember";
         }
         return "redirect:/members";
     }
-
     // 회원 정보 삭제하기
     @GetMapping("/delete/{memberId}")
     public String deleteMember(@PathVariable(name = "memberId") String memberId) {

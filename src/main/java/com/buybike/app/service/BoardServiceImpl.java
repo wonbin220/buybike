@@ -15,18 +15,18 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     public List<Board> getAllBoardList() {
-        return boardRepository.getAllBoardList();
+        return boardRepository.findAll();
     }
 
     @Override
     public Board getBoardById(Long boardId) {
-        Board boardById = boardRepository.getBoardById(boardId);
+        Board boardById = boardRepository.findById(boardId);
         return boardById;
     }
 
     @Override
     public void setNewBoard(Board board) {
-        boardRepository.setNewBoard(board);
+        boardRepository.insert(board);
     }
 
 }
