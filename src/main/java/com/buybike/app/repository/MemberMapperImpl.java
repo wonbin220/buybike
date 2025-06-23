@@ -10,38 +10,38 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class MemberRepositoryImpl implements MemberRepository{
+public class MemberMapperImpl implements MemberMapper {
 
-    private final MemberRepository memberRepository;
+    private final MemberMapper memberMapper;
 
 
     @Override
     public Member findByMemberId(String memberId) {
-        return memberRepository.findByMemberId(memberId);
+        return memberMapper.findByMemberId(memberId);
     }
 
     @Override
     public Member findById(String memberId) {
-        return memberRepository.findById(memberId);
+        return memberMapper.findById(memberId);
     }
 
     @Override
     public List<Member> findAll() {
-        return memberRepository.findAll();
+        return memberMapper.findAll();
     }
 
     @Override
     public Long insert(Member member) {
-        return memberRepository.insert(member);
+        return memberMapper.insert(member);
     }
 
     @Override
     public int update(Member member) {
-        return memberRepository.update(member);
+        return memberMapper.update(member);
     }
 
     @Override
     public int deleteById(String memberId) {
-        return memberRepository.deleteById(memberId);
+        return memberMapper.deleteById(memberId);
     }
 }

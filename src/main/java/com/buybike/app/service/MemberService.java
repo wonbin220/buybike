@@ -1,7 +1,7 @@
 package com.buybike.app.service;
 
 import com.buybike.app.domain.Member;
-import com.buybike.app.repository.MemberRepository;
+import com.buybike.app.repository.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,28 +15,28 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MemberService implements UserDetailsService {
 
-    private final MemberRepository memberRepository;
+    private final MemberMapper memberMapper;
 
     public Long saveMember(Member member) { // 회원 정보 저장하기
         validateDuplicateMember(member);
-        return memberRepository.insert(member);
+        return memberMapper.insert(member);
     }
 
     public int updateMember(Member member) { // 회원 정보 저장하기
-        return memberRepository.update(member);
+        return memberMapper.update(member);
     }
 
     public Member getMemberById(String memberId) { // 회원 정보 가져오기
-        Member member = memberRepository.findByMemberId(memberId);
+        Member member = memberMapper.findByMemberId(memberId);
         return member;
     }
     public void deleteMember(String memberId) { // 회원 삭제하기
-        Member member = memberRepository.findByMemberId(memberId);
-        memberRepository.deleteById(member.getMemberId());
+        Member member = memberMapper.findByMemberId(memberId);
+        memberMapper.deleteById(member.getMemberId());
     }
 
     private void validateDuplicateMember(Member member) { // 회원 id 중복 체크하기
-        Member findMember = memberRepository.findByMemberId(member.getMemberId());
+        Member findMember = memberMapper.findByMemberId(member.getMemberId());
         if(findMember != null) {
             throw new IllegalStateException("이미 가입된 회원입니다.");
         }
@@ -47,7 +47,7 @@ public class MemberService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String id) throws
             UsernameNotFoundException {
-        Member member = memberRepository.findByMemberId(id);
+        Member member = memberMapper.findByMemberId(id);
         if(member == null) {
             throw new UsernameNotFoundException(id);
         }
@@ -59,6 +59,6 @@ public class MemberService implements UserDetailsService {
     }
 
     public boolean findByMemberId(String memberId) {
-        return memberRepository.findByMemberId(memberId) != null;
+        return memberMapper.findByMemberId(memberId) != null;
     }
 }

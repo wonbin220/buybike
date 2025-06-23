@@ -9,7 +9,7 @@ import java.util.List;
 
 @Mapper
 @Repository
-public interface MemberRepository {
+public interface MemberMapper {
      Member findByMemberId(@Param("memberId") String memberId);
      Member findById(@Param("memberId") String memberId);
      List<Member> findAll();

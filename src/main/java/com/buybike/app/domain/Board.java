@@ -9,8 +9,9 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @ToString
+@Builder
 public class Board {
 
     private Long boardId;
@@ -18,7 +19,7 @@ public class Board {
     private String title;
     @NotEmpty(message = "내용을 입력해주세요.")
     private String content;
-    private Member member;
+    private Member memberId;
     private int Hits; // 조회수
     private LocalDateTime regDt;
     private String fileName;
@@ -29,7 +30,5 @@ public class Board {
         this.title = title;
         this.content = content;
         this.member = member;
-        this.Hits = 0; // 초기 조회수는 0
-        this.regDt = LocalDateTime.now(); // 현재 시간으로 등록일시 설정
     }
 }

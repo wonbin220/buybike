@@ -9,10 +9,18 @@ import java.util.List;
 
 @Mapper
 @Repository
-public interface BoardRepository {
+public interface BoardMapper {
     List<Board> findAll();
     Board findById(@Param("boardId") Long boardId);
     Long insert(Board board);
     Long update(Board board);
     Long deleteById(@Param("boardId") Long boardId);
+
+    int getTotalBoardCount();
+
+
+    List<Board> findAllWithPaging(@Param("offset") int offset,
+                                  @Param("limit") int limit,
+                                  @Param("sortField") String sortField,
+                                  @Param("sortDir") String sortDir);
 }
