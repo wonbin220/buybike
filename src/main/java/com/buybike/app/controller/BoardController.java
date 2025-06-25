@@ -11,6 +11,9 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
@@ -194,7 +197,12 @@ public class BoardController {
         boardService.deleteBoardById(boardId);
         return "redirect:/board/list";
     }
+
+    @GetMapping("")
+    public ResponseEntity<T> getListBoard(Board board, @PageableDefault(size = 10) Pageable pageable) {
+        return ResponseEntity.ok(boardService.getListBoard(board, pageable));
+    }
 }
 
 
-}
+

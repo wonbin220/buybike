@@ -2,8 +2,11 @@ package com.buybike.app.service;
 
 import com.buybike.app.domain.Board;
 import com.buybike.app.domain.BoardFormDto;
+import com.buybike.app.domain.PageList;
 import com.buybike.app.repository.BoardMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,12 +16,8 @@ import java.util.List;
 @Service
 public class BoardService {
 
-    private final BoardMapper boardMapper;
-
     @Autowired
-    public BoardService(BoardMapper boardMapper) {
-        this.boardMapper = boardMapper;
-    }
+    BoardMapper boardMapper;
 
     // 게시글 등록
     public Long savePost(BoardFormDto boardDto) {
@@ -69,5 +68,21 @@ public class BoardService {
     public List<Board> listAll(int pageNum, int pageSize, String sortField, String sortDir) {
         int offset = (pageNum - 1) * pageSize;
         return boardMapper.findAllWithPaging(offset, pageSize, sortField, sortDir);
+    }
+
+    public Page<Map<String, Object>> getListBoard(Board board, Pageable pageable) {
+
+        // 빌더 패턴으로 data, pageable 파라미터에 데이터 주입
+        PageList<?> pageList = PageList.builder()
+                .data(board)
+                .pageable(pageable)
+                .build();
+
+        List<Map<String, Object>> content = boardMapper.getListBoard(pageList);
+        int total = boardMapper.getListBoardCount(board);
+
+        return new PageImpl<>(content, pageable, total);
+
+
     }
 }

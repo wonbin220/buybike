@@ -25,7 +25,7 @@ public class BoardFormDto  {
                 .boardId(boardId)
                 .title(title)
                 .content(content)
-                .member(memberId) // Member 객체로 설정
+                .memberId(memberId) // Member 객체로 설정
                 .Hits(hits)
                 .regDt(regDt != null ? regDt : LocalDateTime.now()) // 현재 시간으로 설정
                 .fileName(fileName)

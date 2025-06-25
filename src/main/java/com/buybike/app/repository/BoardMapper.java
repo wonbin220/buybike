@@ -1,11 +1,13 @@
 package com.buybike.app.repository;
 
 import com.buybike.app.domain.Board;
+import com.buybike.app.domain.PageList;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 @Repository
@@ -23,4 +25,8 @@ public interface BoardMapper {
                                   @Param("limit") int limit,
                                   @Param("sortField") String sortField,
                                   @Param("sortDir") String sortDir);
+
+    List<Map<String, Object>> getListBoard(PageList<?> pageList);
+
+    int getListBoardConunt(Board board);
 }
