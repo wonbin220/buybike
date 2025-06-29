@@ -10,21 +10,21 @@
     </insert>
 
     <!-- 전체 게시글 조회 -->
-    <select id="findAll" resultType="com.buybike.app.domain.Board">
+    <select id="findAll" resultType="Board">
         SELECT boardId, memberId,  title, content, hit, regDt
         FROM board
         ORDER BY id DESC
     </select>
 
     <!-- 게시글 단건 조회 -->
-    <select id="findById" parameterType="long" resultType="com.buybike.app.domain.Board">
+    <select id="findById" parameterType="long" resultType="cBoard">
         SELECT boarId,memberId, title, content, hit, regDt
         FROM board
         WHERE id = #{boardId}
     </select>
 
     <!-- 게시글 수정 -->
-    <update id="update" parameterType="com.buybike.app.domain.Board">
+    <update id="update" parameterType="Board">
         UPDATE board
         SET memberId = #{memberId},
             title = #{title},
@@ -46,12 +46,38 @@
 
 
     <!-- 페이징 및 정렬된 게시글 목록 조회 -->
-    <select id="findAllWithPaging" resultType="com.buybike.app.domain.Board">
-        SELECT boardId, memberId,  title, content, hit, created_date
+    <select id="findAllWithPaging" resultType="Board">
+        SELECT boardId, memberId, title, content, hit, regDt
         FROM board
-        ORDER BY
-            ${sortField} ${sortDir}
-        LIMIT #{limit} OFFSET #{offset}
+        ORDER BY ${sortField} ${sortDir}
+        LIMIT #{pageable.pageSize} OFFSET #{pageable.offset}
+    </select>
+
+    <select id="getListBoard" parameterType="PageList" resultType="Board">
+        select boardId, title, content, memberId, regDt
+        from board
+        <where>
+            <if test="data.title != null and data.title != ''">
+                and title like '%' || #{data.title} || '%'
+            </if>
+            <if test="data.meberId != null and data.memberId != ''">
+                AND memberId LIKE '%' || #{data.memberId} || '%'
+            </if>
+        </where>
+    offset #{pageable.offset} rows fetch next #{pageable.pageSize} rows only
+    </select>
+
+    <select id="getListBoardCount" parameterType="Board" resultType="int">
+        select count(*) as cnt
+        from board
+        <where>
+            <if test="title != null anl title != ''">
+                and title like '%' || #{title} || '%'
+            </if>
+            <if test="memberId != null and memberId != ''">
+                AND memberId LIKE '%' || #{memberId} || '%'
+            </if>
+        </where>
     </select>
 
 </mapper>

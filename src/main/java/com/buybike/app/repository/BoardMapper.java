@@ -28,5 +28,5 @@ public interface BoardMapper {
 
     List<Map<String, Object>> getListBoard(PageList<?> pageList);
 
-    int getListBoardConunt(Board board);
+    int getListBoardCount(Board board);
 }

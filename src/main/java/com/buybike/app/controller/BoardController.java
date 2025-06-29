@@ -199,7 +199,7 @@ public class BoardController {
     }
 
     @GetMapping("")
-    public ResponseEntity<T> getListBoard(Board board, @PageableDefault(size = 10) Pageable pageable) {
+    public ResponseEntity<?> getListBoard(Board board, @PageableDefault(size = 10) Pageable pageable) {
         return ResponseEntity.ok(boardService.getListBoard(board, pageable));
     }
 }

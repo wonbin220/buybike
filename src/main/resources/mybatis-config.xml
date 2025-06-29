@@ -4,7 +4,7 @@
 <configuration>
     <typeAliases>
         <!--클래스 alias가 들어갈 공간-->
-        <typeAlias type="com.buybike.app.controller.BoardController" alias="BoardController"></typeAlias>
+        <typeAlias type="com.buybike.app.controller.BoardController" alias="Board"></typeAlias>
         <typeAlias type="com.buybike.app.controller.MemberController" alias="Member"></typeAlias>
         <!--indexController예시-->
     </typeAliases>

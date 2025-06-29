@@ -25,10 +25,10 @@ public class Board {
     private String fileName;
     private MultipartFile boardImage; // 게시판 이미지
 
-    public Board(Long boardId, String title, String content, Member member) {
+    public Board(Long boardId, String title, String content, Member memberId) {
         this.boardId = boardId;
         this.title = title;
         this.content = content;
-        this.member = member;
+        this.memberId = memberId;
     }
 }
