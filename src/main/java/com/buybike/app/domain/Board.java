@@ -21,14 +21,14 @@ public class Board {
     private String title;
     @NotEmpty(message = "내용을 입력해주세요.")
     private String content;
-    private Member memberId;
+    private String memberId;
     private int Hits; // 조회수
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String fileName;
     private MultipartFile boardImage; // 게시판 이미지
 
-    public Board(String id, String title, String content, Member memberId) {
+    public Board(String id, String title, String content, String memberId) {
         this.id = UUID.randomUUID().toString();
         this.title = title;
         this.content = content;
