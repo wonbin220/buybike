@@ -1,6 +1,7 @@
 <html>
 <head>
     <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>게시판 목록</title>
     <link href="/BuyBike/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -10,82 +11,71 @@
     }
 </style>
 <body>
-<div class="container py-4">
-    <th:block th:replace="~{module/header}"></th:block>
-    <div class="p-5 mb-4 bg-body-tertiary rounded-3">
-        <div class="container-fluid py-5">
-            <h1 class="display-5 fw-bold">게시판 목록</h1>
-            <p class="col-md-8 fs-4">BookMarket</p>
-        </div>
+    <div class="container">
+        <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+                <img class="d-block mx-auto" src="/assets/brand/bootstrap-logo.svg" alt="" width="40" height="32">
+                <span class="fs-4">Simple header</span> </a>
+            <ul class="nav nav-pills">
+                <li class="nav-item"><a href="/posts/list" class="nav-link active" aria-current="page">게시판</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Features</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Pricing</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">FAQs</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">About</a></li>
+            </ul>
+        </header>
     </div>
-    <div class="row align-items-md-stretch">
-        <div style="padding-top: 50px">
-            <div class="text-end" style="padding-right:30px">전체 게시글:
-                [[${totalItems}]]</div>
-            <table class="table">
-                <thead class="thead-light">
-                <tr class="text-center"> // 정렬 표시
-                    <th>#<a th:href="@{'/board/page?pageNum=' + ${currentPage} + '&sortField=id&sortDir=' + ${reverseSortDir}}"><span
-                            th:text="${reverseSortDir} == 'asc'? '▼': '▲'"></span></a></th>
-                    <th>제목<a th:href="@{'/board/page?pageNum=' + ${currentPage} + '&sortField=title&sortDir=' + ${reverseSortDir}}"><span
-                            th:text="${reverseSortDir} == 'asc'? '▼': '▲'"></span></a></th>
-                    <th>작성자<a th:href="@{'/board/page?pageNum=' + ${currentPage} + '&sortField=writer&sortDir=' + ${reverseSortDir}}"><span
-                            th:text="${reverseSortDir} == 'asc'? '▼': '▲'"></span></a></th>
-                    <th>작성일<a th:href="@{'/board/page?pageNum=' + ${currentPage} + '&sortField=createdDate&sortDir=' + ${reverseSortDir}}"><span
-                            th:text="${reverseSortDir} == 'asc'? '▼': '▲'"></span></a></th>
+    <!-- PageHelper 게시글 목록 -->
+    <div class="container my-5 py-5">
+        <h1 class="text-center">PageHelper</h1>
+        <div class="d-flex justify-content-between align-items-center my-3">
+            <div></div>
+
+            <div>
+                <select class="form-select" aria-label="Default select example"
+                        th:field="${pagination.size}"
+                        onchange="location.href = '/posts/list?page=1&size=' + this.value">
+                    <option value="5" >5 개씩 보기</option>
+                    <option value="10" >10 개씩 보기</option>
+                    <option value="30" >30 개씩 보기</option>
+                    <option value="50" >50 개씩 보기</option>
+                    <option value="100" >100 개씩 보기</option>
+                </select>
+            </div>
+        </div>
+
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>등록일자</th>
+                <th>수정일자</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:if="${ list == null || list.isEmpty() }">
+                <tr>
+                    <td colspan="5" class="text-center">조회된 데이터가 없습니다.</td>
                 </tr>
-                </thead>
-                <tbody>
-                <tr class="text-center" th:each="board : ${boardList}">
-                    <th scope="row">
-                        <span th:text="${board.id}"></span>
-                    </th>
+            </th:block>
+            <th:block th:each="post : ${pageInfo.list}">
+                <tr>
+                    <td><th:block th:text="${board.no}"></th:block></td>
                     <td>
-                        <a th:href="@{'/board/view/' + ${board.boardId}}">
-                            <span th:text="${board.title}"></span>
+                        <a th:href="@{ /posts/read/{no}(no=${post.no})}">
+                            <th:block th:text="${board.title}"></th:block>
                         </a>
                     </td>
-                    <td>
-                        <span th:text="${board.memberId}"></span>
-                    </td>
-                    <td>
-                         <span th:text="${#temporals.format(board.createdDate, 'yyyy-MM-dd HH:mm')}"></span>
-                    </td>
+                    <td><th:block th:text="${board.memberId}"></th:block></td>
+                    <td><th:block th:text="${ #dates.format(post.createdAt, 'yyyy-MM-dd HH:mm:ss') }"></th:block></td>
+                    <td><th:block th:text="${ #dates.format(post.updatedAt, 'yyyy-MM-dd HH:mm:ss') }"></th:block></td>
                 </tr>
-                </tbody>
-            </table>
-            <div>&nbsp;</div>
-            <div><i>Sorted by [[${sortField}]] in [[${sortDir}]] board</i></div>
-            <div>&nbsp;</div>
-            <div th:if="${totalPages > 1}" class="text-center"> // 페이지 번호
-                <a th:if="${currentPage > 1}" th:href="@{'/board/page?pageNum=1' + '&sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">First</a>
-                <span th:unless="${currentPage > 1}">First</span>
-                &nbsp;&nbsp;
-                <a th:if="${currentPage > 1}" th:href="@{'/board/page?pageNum=' + ${currentPage - 1} + '&sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Previous</a>
-                <span th:unless="${currentPage > 1}">Previous</span>
-                &nbsp;&nbsp;
-                <span th:each="i: ${#numbers.sequence(1, totalPages)}">
-        <a th:if="${currentPage != i}" th:href="@{'/board/page?pageNum=' + ${i} + '&sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">[[${i}]]</a>
-        <span th:unless="${currentPage != i}">[[${i}]]</span>
-             &nbsp;
-        </span>
-                <a th:if="${currentPage < totalPages}" th:href="@{'/board/page?pageNum='+ ${currentPage + 1} + '&sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Next</a>
-                <span th:unless="${currentPage < totalPages}">Next</span>
-                &nbsp;&nbsp;
-                <a th:if="${currentPage < totalPages}" th:href="@{'/board/page?pageNum='+ ${totalPages} + '&sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Last</a>
-                <span th:unless="${currentPage < totalPages}">Last</span>
-            </div>
-            <div class="row" style="padding-top: 20px">
-                <div class="col-auto mr-auto"></div>
-                <div class="col-auto">
-                    <a sec:authorize="isAuthenticated()" class="btn btn-primary"
-                       th:href="@{/board/write}" role="button">글쓰기</a>
-                </div>
-            </div>
-            <th:block th:replace="~{module/footer}"></th:block>
-        </div>
-    </div>
-    <script src="/BuyBike/js/jquery-3.7.1.js"></script>
-    <script src="/js/bootstrap.bundle.min.js"></script>
+            </th:block>
+            </tbody>
+        </table>
+
+
 </body>
 </html>

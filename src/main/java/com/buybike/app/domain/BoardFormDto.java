@@ -12,35 +12,36 @@ import java.time.LocalDateTime;
 @Builder
 @ToString
 public class BoardFormDto  {
-    private Long boardId;
+    private Long no;
+    private String id; // 게시글 ID
     private String title;
     private String content;
     private Member memberId; // 게시글 작성자의 ID
     private int hits; // 조회수
-    private LocalDateTime regDt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAT;
     private String fileName; // 업로드된 파일 이름
     private MultipartFile boardImage; // 게시판 이미지 URL
     public Board toEntity() {
         Board build = Board.builder()
-                .boardId(boardId)
+                .id(id)
                 .title(title)
                 .content(content)
                 .memberId(memberId) // Member 객체로 설정
                 .Hits(hits)
-                .regDt(regDt != null ? regDt : LocalDateTime.now()) // 현재 시간으로 설정
+                .createdAt(createdAt != null ? createdAt : LocalDateTime.now()) // 현재 시간으로 설정
                 .fileName(fileName)
                 .boardImage(boardImage)
                 .build();
         return build;
     }
 
-    public BoardFormDto(Long boardId, String title, String content, Member memberId, int hits, LocalDateTime regDt) {
-        this.boardId = boardId;
+    public BoardFormDto(String id, String title, String content, Member memberId,  LocalDateTime createdAt) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.memberId = memberId; // 게시글 작성자의 ID
-        this.hits = hits; // 조회수
-        this.regDt = regDt != null ? regDt : LocalDateTime.now(); // 현재 시간으로 설정
+        this.createdAt = createdAt != null ? createdAt : LocalDateTime.now(); // 현재 시간으로 설정
     }
 }
 

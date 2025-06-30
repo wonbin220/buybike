@@ -11,16 +11,16 @@
 
     <!-- 전체 게시글 조회 -->
     <select id="findAll" resultType="Board">
-        SELECT boardId, memberId,  title, content, hit, regDt
+        SELECT id, memberId,  title, content, hit, regDt
         FROM board
         ORDER BY id DESC
     </select>
 
     <!-- 게시글 단건 조회 -->
-    <select id="findById" parameterType="long" resultType="cBoard">
-        SELECT boarId,memberId, title, content, hit, regDt
+    <select id="findById" parameterType="long" resultType="Board">
+        SELECT id,memberId, title, content, hit, regDt
         FROM board
-        WHERE id = #{boardId}
+        WHERE id = #{id}
     </select>
 
     <!-- 게시글 수정 -->
@@ -30,12 +30,12 @@
             title = #{title},
             content = #{content},
             regDt = NOW()
-        WHERE boardId = #{boardId}
+        WHERE id = #{id}
     </update>
 
     <!-- 게시글 삭제 -->
     <delete id="deleteById" parameterType="long">
-        DELETE FROM board WHERE boardId = #{boardId}
+        DELETE FROM board WHERE id = #{id}
     </delete>
 
 
@@ -43,41 +43,47 @@
         SELECT COUNT(*) FROM board
     </select>
 
-
-
-    <!-- 페이징 및 정렬된 게시글 목록 조회 -->
-    <select id="findAllWithPaging" resultType="Board">
-        SELECT boardId, memberId, title, content, hit, regDt
+    <!-- 페이징 목록 -->
+    <select id="page" resultType="Board">
+        SELECT *
         FROM board
-        ORDER BY ${sortField} ${sortDir}
-        LIMIT #{pageable.pageSize} OFFSET #{pageable.offset}
+                 LIMIT #{index}, #{size}
     </select>
 
-    <select id="getListBoard" parameterType="PageList" resultType="Board">
-        select boardId, title, content, memberId, regDt
-        from board
-        <where>
-            <if test="data.title != null and data.title != ''">
-                and title like '%' || #{data.title} || '%'
-            </if>
-            <if test="data.meberId != null and data.memberId != ''">
-                AND memberId LIKE '%' || #{data.memberId} || '%'
-            </if>
-        </where>
-    offset #{pageable.offset} rows fetch next #{pageable.pageSize} rows only
-    </select>
 
-    <select id="getListBoardCount" parameterType="Board" resultType="int">
-        select count(*) as cnt
-        from board
-        <where>
-            <if test="title != null anl title != ''">
-                and title like '%' || #{title} || '%'
-            </if>
-            <if test="memberId != null and memberId != ''">
-                AND memberId LIKE '%' || #{memberId} || '%'
-            </if>
-        </where>
-    </select>
+<!--    &lt;!&ndash; 페이징 및 정렬된 게시글 목록 조회 &ndash;&gt;-->
+<!--    <select id="findAllWithPaging" resultType="Board">-->
+<!--        SELECT boardId, memberId, title, content, hit, regDt-->
+<!--        FROM board-->
+<!--        ORDER BY ${sortField} ${sortDir}-->
+<!--        LIMIT #{pageable.pageSize} OFFSET #{pageable.offset}-->
+<!--    </select>-->
+
+<!--    <select id="getListBoard" parameterType="PageList" resultType="Board">-->
+<!--        select boardId, title, content, memberId, regDt-->
+<!--        from board-->
+<!--        <where>-->
+<!--            <if test="data.title != null and data.title != ''">-->
+<!--                and title like '%' || #{data.title} || '%'-->
+<!--            </if>-->
+<!--            <if test="data.meberId != null and data.memberId != ''">-->
+<!--                AND memberId LIKE '%' || #{data.memberId} || '%'-->
+<!--            </if>-->
+<!--        </where>-->
+<!--    offset #{pageable.offset} rows fetch next #{pageable.pageSize} rows only-->
+<!--    </select>-->
+
+<!--    <select id="getListBoardCount" parameterType="Board" resultType="int">-->
+<!--        select count(*) as cnt-->
+<!--        from board-->
+<!--        <where>-->
+<!--            <if test="title != null anl title != ''">-->
+<!--                and title like '%' || #{title} || '%'-->
+<!--            </if>-->
+<!--            <if test="memberId != null and memberId != ''">-->
+<!--                AND memberId LIKE '%' || #{memberId} || '%'-->
+<!--            </if>-->
+<!--        </where>-->
+<!--    </select>-->
 
 </mapper>

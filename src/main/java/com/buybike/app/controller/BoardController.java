@@ -3,31 +3,26 @@ package com.buybike.app.controller;
 import com.buybike.app.domain.Board;
 import com.buybike.app.domain.BoardFormDto;
 import com.buybike.app.domain.Member;
+import com.buybike.app.domain.Pagination;
 import com.buybike.app.service.BoardService;
-import jakarta.servlet.ServletOutputStream;
+import com.github.pagehelper.PageInfo;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping("/boards")
 public class BoardController {
@@ -123,10 +118,10 @@ public class BoardController {
 
 
     // 전체 게시글 목록 가져오기 (1페이지, id 내림차순 기본)
-    @GetMapping("/list")
-    public String viewHomePage(Model model) {
-        return viewPage(1, "id", "desc", model);
-    }
+//    @GetMapping("/list")
+//    public String viewHomePage(Model model) {
+//        return viewPage(1, "id", "desc", model);
+//    }
 
     // 페이징 및 정렬된 게시글 목록 가져오기
     @GetMapping("/page")
@@ -164,9 +159,9 @@ public class BoardController {
 
     // 게시글 상세 보기
     @GetMapping("/view/{boardId}")
-    public String requestUpdateMemberForm(@PathVariable(name = "boardId") Long boardId,
+    public String requestUpdateMemberForm(@PathVariable(name = "id") String id,
                                           HttpServletRequest httpServletRequest, Model model) {
-        Board board = boardService.getBoardById(boardId);
+        Board board = boardService.getBoardById(id);
         model.addAttribute("boardFormDto", board);
         HttpSession session = httpServletRequest.getSession(true);
         Member member = (Member) session.getAttribute("userLoginInfo");
@@ -192,15 +187,34 @@ public class BoardController {
     }
 
     // 게시글 삭제
-    @GetMapping("/delete/{boardId}")
-    public String deleteOrder(@PathVariable(name = "boardId") Long boardId) {
-        boardService.deleteBoardById(boardId);
+    @GetMapping("/delete/{id}")
+    public String deleteOrder(@PathVariable(name = "id") String id) {
+        boardService.deleteBoardById(id);
         return "redirect:/board/list";
     }
 
     @GetMapping("")
     public ResponseEntity<?> getListBoard(Board board, @PageableDefault(size = 10) Pageable pageable) {
         return ResponseEntity.ok(boardService.getListBoard(board, pageable));
+    }
+
+    @GetMapping("/list")
+    public String list(Model model, Pagination pagination) throws Exception {
+        int page = (int) pagination.getPage();
+        int size = (int) pagination.getSize();
+        PageInfo<Board> pageInfo = boardService.page(page, size);
+        log.info("pageInfo: {}", pageInfo);
+        model.addAttribute("pageInfo", pageInfo);
+
+        // Uri 빌더
+        String pageUri = UriComponentsBuilder.fromPath("/boards/list")
+                .queryParam("size", pageInfo.getSize())
+                .queryParam("count", pageInfo.getPageSize())
+                .build()
+                .toUriString();
+
+        model.addAttribute("pagUri", pageUri);
+        return "board/list";
     }
 }
 

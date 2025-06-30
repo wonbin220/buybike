@@ -4,6 +4,8 @@ import com.buybike.app.domain.Board;
 import com.buybike.app.domain.BoardFormDto;
 import com.buybike.app.domain.PageList;
 import com.buybike.app.repository.BoardMapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,10 +24,10 @@ public class BoardService {
     BoardMapper boardMapper;
 
     // 게시글 등록
-    public Long savePost(BoardFormDto boardDto) {
+    public String savePost(BoardFormDto boardDto) {
         Board board = boardDto.toEntity();
         boardMapper.insert(board);
-        return board.getBoardId();
+        return board.getId();
     }
 
     // 전체 게시글 조회
@@ -35,11 +37,11 @@ public class BoardService {
         List<BoardFormDto> boardDtoList = new ArrayList<>();
         for (Board board : boardList) {
             BoardFormDto boardDto = BoardFormDto.builder()
-                    .boardId(board.getBoardId())
+                    .id(board.getId())
                     .memberId(board.getMemberId())
                     .title(board.getTitle())
                     .content(board.getContent())
-                    .regDt(board.getRegDt())
+                    .createdAt(board.getCreatedAt())
                     .build();
             boardDtoList.add(boardDto);
         }
@@ -47,8 +49,8 @@ public class BoardService {
     }
 
     // 게시글 단건 조회
-    public Board getBoardById(Long boardId) {
-        return boardMapper.findById(boardId);
+    public Board getBoardById(String id) {
+        return boardMapper.findById(id);
     }
 
     // 게시글 수정
@@ -58,8 +60,8 @@ public class BoardService {
     }
 
     // 게시글 삭제
-    public void deleteBoardById(Long boardId) {
-        boardMapper.deleteById(boardId);
+    public void deleteBoardById(String id) {
+        boardMapper.deleteById(id);
     }
 
     public int getTotalBoardCount() {
@@ -84,7 +86,17 @@ public class BoardService {
         int total = boardMapper.getListBoardCount(board);
 
         return new PageImpl<>(content, pageable, total);
+    }
 
 
+    // PageHelper를 사용한 페이징 처리
+    public PageInfo<Board> page(int page, int size) throws Exception {
+        // PageHelper.startPage(page, size); (현재번호, 페이지당 데이터 수)
+        PageHelper.startPage(page, size);
+        List<Board> list = boardMapper.list();
+
+        // PageInfo(리스트, 노출 페이지 수)
+        PageInfo<Board> pageInfo = new PageInfo<>(list, 10);
+        return pageInfo;
     }
 }
