@@ -2,6 +2,7 @@ package com.buybike.app.domain;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -23,16 +24,16 @@ public class Board {
     private String content;
     private String memberId;
     private int Hits; // 조회수
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime createdAt;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime updatedAt;
     private String fileName;
     private MultipartFile boardImage; // 게시판 이미지
 
-    public Board(String id, String title, String content, String memberId) {
+    public Board() {
         this.id = UUID.randomUUID().toString();
-        this.title = title;
-        this.content = content;
-        this.memberId = memberId;
+
     }
 
 

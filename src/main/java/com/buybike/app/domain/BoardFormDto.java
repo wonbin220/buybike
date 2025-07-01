@@ -16,7 +16,7 @@ public class BoardFormDto  {
     private String id; // 게시글 ID
     private String title;
     private String content;
-    private Member memberId; // 게시글 작성자의 ID
+    private String memberId; // 게시글 작성자의 ID
     private int hits; // 조회수
     private LocalDateTime createdAt;
     private LocalDateTime updatedAT;
@@ -36,7 +36,7 @@ public class BoardFormDto  {
         return build;
     }
 
-    public BoardFormDto(String id, String title, String content, Member memberId,  LocalDateTime createdAt) {
+    public BoardFormDto(String id, String title, String content, String memberId,  LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.content = content;

@@ -124,79 +124,79 @@ public class BoardController {
 //    }
 
     // 페이징 및 정렬된 게시글 목록 가져오기
-    @GetMapping("/page")
-    public String viewPage(@RequestParam("pageNum") int pageNum,
-                           @RequestParam("sortField") String sortField,
-                           @RequestParam("sortDir") String sortDir,
-                           Model model) {
-        int pageSize = 10; // 한 페이지에 보여줄 게시글 수
-        List<Board> listBoard = boardService.listAll(pageNum, pageSize, sortField, sortDir);
-        int totalItems = boardService.getTotalBoardCount();
-        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
-
-        model.addAttribute("currentPage", pageNum);
-        model.addAttribute("totalPages", totalPages);
-        model.addAttribute("totalItems", totalItems);
-        model.addAttribute("sortField", sortField);
-        model.addAttribute("sortDir", sortDir);
-        model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
-        model.addAttribute("boardList", listBoard);
-        return "board/list";
-    }
+    // @GetMapping("/page")
+    // public String viewPage(@RequestParam("pageNum") int pageNum,
+    //                        @RequestParam("sortField") String sortField,
+    //                        @RequestParam("sortDir") String sortDir,
+    //                        Model model) {
+    //     int pageSize = 10; // 한 페이지에 보여줄 게시글 수
+    //     List<Board> listBoard = boardService.listAll(pageNum, pageSize, sortField, sortDir);
+    //     int totalItems = boardService.getTotalBoardCount();
+    //     int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+    //
+    //     model.addAttribute("currentPage", pageNum);
+    //     model.addAttribute("totalPages", totalPages);
+    //     model.addAttribute("totalItems", totalItems);
+    //     model.addAttribute("sortField", sortField);
+    //     model.addAttribute("sortDir", sortDir);
+    //     model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
+    //     model.addAttribute("boardList", listBoard);
+    //     return "board/list";
+    // }
 
     // 게시글 글쓰기 페이지 출력
-    @GetMapping("/write")
-    public String post() {
-        return "board/write";
-    }
+    // @GetMapping("/write")
+    // public String post() {
+    //     return "board/write";
+    // }
+    //
+    // // 게시글 글쓰기 저장
+    // @PostMapping("/write")
+    // public String write(BoardFormDto boardDto) {
+    //     boardService.savePost(boardDto);
+    //     return "redirect:/board/list";
+    // }
+    //
+    // // 게시글 상세 보기
+    // @GetMapping("/view/{boardId}")
+    // public String requestUpdateMemberForm(@PathVariable(name = "id") String id,
+    //                                       HttpServletRequest httpServletRequest, Model model) {
+    //     Board board = boardService.getBoardById(id);
+    //     model.addAttribute("boardFormDto", board);
+    //     HttpSession session = httpServletRequest.getSession(true);
+    //     Member member = (Member) session.getAttribute("userLoginInfo");
+    //     model.addAttribute("buttonOk", false);
+    //     if (member != null && board.getMemberId().equals(member.getMemberId())) {
+    //         model.addAttribute("buttonOk", true);
+    //     }
+    //     return "board/view";
+    // }
+    //
+    // // 게시글 수정
+    // @PostMapping("/update")
+    // public String submitUpdateMember(@Valid BoardFormDto boardDto, BindingResult bindingResult, Model model) {
+    //     if (bindingResult.hasErrors())
+    //         return "board/view";
+    //     try {
+    //         boardService.updateBoard(boardDto);
+    //     } catch (IllegalStateException e) {
+    //         model.addAttribute("errorMessage", e.getMessage());
+    //         return "board/view";
+    //     }
+    //     return "redirect:/board/list";
+    // }
+    //
+    // // 게시글 삭제
+    // @GetMapping("/delete/{id}")
+    // public String deleteOrder(@PathVariable(name = "id") String id) {
+    //     boardService.deleteBoardById(id);
+    //     return "redirect:/board/list";
+    // }
 
-    // 게시글 글쓰기 저장
-    @PostMapping("/write")
-    public String write(BoardFormDto boardDto) {
-        boardService.savePost(boardDto);
-        return "redirect:/board/list";
-    }
-
-    // 게시글 상세 보기
-    @GetMapping("/view/{boardId}")
-    public String requestUpdateMemberForm(@PathVariable(name = "id") String id,
-                                          HttpServletRequest httpServletRequest, Model model) {
-        Board board = boardService.getBoardById(id);
-        model.addAttribute("boardFormDto", board);
-        HttpSession session = httpServletRequest.getSession(true);
-        Member member = (Member) session.getAttribute("userLoginInfo");
-        model.addAttribute("buttonOk", false);
-        if (member != null && board.getMemberId().equals(member.getMemberId())) {
-            model.addAttribute("buttonOk", true);
-        }
-        return "board/view";
-    }
-
-    // 게시글 수정
-    @PostMapping("/update")
-    public String submitUpdateMember(@Valid BoardFormDto boardDto, BindingResult bindingResult, Model model) {
-        if (bindingResult.hasErrors())
-            return "board/view";
-        try {
-            boardService.updateBoard(boardDto);
-        } catch (IllegalStateException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "board/view";
-        }
-        return "redirect:/board/list";
-    }
-
-    // 게시글 삭제
-    @GetMapping("/delete/{id}")
-    public String deleteOrder(@PathVariable(name = "id") String id) {
-        boardService.deleteBoardById(id);
-        return "redirect:/board/list";
-    }
-
-    @GetMapping("")
-    public ResponseEntity<?> getListBoard(Board board, @PageableDefault(size = 10) Pageable pageable) {
-        return ResponseEntity.ok(boardService.getListBoard(board, pageable));
-    }
+    // @GetMapping("")
+    // public ResponseEntity<?> getListBoard(Board board, @PageableDefault(size = 10) Pageable pageable) {
+    //     return ResponseEntity.ok(boardService.getListBoard(board, pageable));
+    // }
 
     @GetMapping("/list")
     public String list(Model model, Pagination pagination) throws Exception {
@@ -213,7 +213,8 @@ public class BoardController {
                 .build()
                 .toUriString();
 
-        model.addAttribute("pagUri", pageUri);
+        model.addAttribute("pageUri", pageUri);
+        log.info("pageUri: {}",pageUri);
         return "board/list";
     }
 }

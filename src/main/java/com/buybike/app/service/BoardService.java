@@ -23,70 +23,30 @@ public class BoardService {
     @Autowired
     BoardMapper boardMapper;
 
-    // 게시글 등록
-    public String savePost(BoardFormDto boardDto) {
-        Board board = boardDto.toEntity();
-        boardMapper.insert(board);
-        return board.getId();
-    }
 
-    // 전체 게시글 조회
-    @Transactional
-    public List<BoardFormDto> getBoardList() {
-        List<Board> boardList = boardMapper.findAll();
-        List<BoardFormDto> boardDtoList = new ArrayList<>();
-        for (Board board : boardList) {
-            BoardFormDto boardDto = BoardFormDto.builder()
-                    .id(board.getId())
-                    .memberId(board.getMemberId())
-                    .title(board.getTitle())
-                    .content(board.getContent())
-                    .createdAt(board.getCreatedAt())
-                    .build();
-            boardDtoList.add(boardDto);
-        }
-        return boardDtoList;
-    }
-
-    // 게시글 단건 조회
-    public Board getBoardById(String id) {
-        return boardMapper.findById(id);
-    }
-
-    // 게시글 수정
-    public Long updateBoard(BoardFormDto boardDto) {
-        Board board = boardDto.toEntity();
-        return boardMapper.update(board);
-    }
-
-    // 게시글 삭제
-    public void deleteBoardById(String id) {
-        boardMapper.deleteById(id);
-    }
-
-    public int getTotalBoardCount() {
-        return boardMapper.getTotalBoardCount();
-    }
-
-    // 페이징 및 정렬된 게시글 목록 조회
-    public List<Board> listAll(int pageNum, int pageSize, String sortField, String sortDir) {
-        int offset = (pageNum - 1) * pageSize;
-        return boardMapper.findAllWithPaging(offset, pageSize, sortField, sortDir);
-    }
-
-    public Page<Map<String, Object>> getListBoard(Board board, Pageable pageable) {
-
-        // 빌더 패턴으로 data, pageable 파라미터에 데이터 주입
-        PageList<?> pageList = PageList.builder()
-                .data(board)
-                .pageable(pageable)
-                .build();
-
-        List<Map<String, Object>> content = boardMapper.getListBoard(pageList);
-        int total = boardMapper.getListBoardCount(board);
-
-        return new PageImpl<>(content, pageable, total);
-    }
+    // public int getTotalBoardCount() {
+    //     return boardMapper.getTotalBoardCount();
+    // }
+    //
+    // // 페이징 및 정렬된 게시글 목록 조회
+    // public List<Board> listAll(int pageNum, int pageSize, String sortField, String sortDir) {
+    //     int offset = (pageNum - 1) * pageSize;
+    //     return boardMapper.findAllWithPaging(offset, pageSize, sortField, sortDir);
+    // }
+    //
+    // public Page<Map<String, Object>> getListBoard(Board board, Pageable pageable) {
+    //
+    //     // 빌더 패턴으로 data, pageable 파라미터에 데이터 주입
+    //     PageList<?> pageList = PageList.builder()
+    //             .data(board)
+    //             .pageable(pageable)
+    //             .build();
+    //
+    //     List<Map<String, Object>> content = boardMapper.getListBoard(pageList);
+    //     int total = boardMapper.getListBoardCount(board);
+    //
+    //     return new PageImpl<>(content, pageable, total);
+    // }
 
 
     // PageHelper를 사용한 페이징 처리

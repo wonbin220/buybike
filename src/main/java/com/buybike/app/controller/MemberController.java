@@ -5,6 +5,7 @@ import com.buybike.app.domain.MemberFormDto;
 import com.buybike.app.service.MemberService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,7 +26,11 @@ public class MemberController {
     PasswordEncoder passwordEncoder;
     // 신규 회원 등록페이지 출력하기
     @GetMapping(value = "/add")
-    public String requestAddMemberForm(Model model) {
+    public String requestAddMemberForm(Model model, Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            // 이미 로그인된 사용자는 메인 페이지로 리다이렉트
+            return "redirect:/";
+        }
         model.addAttribute("memberFormDto", new MemberFormDto());
         return "member/addMember";
     }

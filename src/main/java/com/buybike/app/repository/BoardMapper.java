@@ -13,23 +13,24 @@ import java.util.Map;
 @Mapper
 @Repository
 public interface BoardMapper {
-    List<Board> findAll();
-    Board findById(@Param("id") String id);
-    Long insert(Board board);
-    Long update(Board board);
-    Long deleteById(@Param("id") String id);
+    // List<Board> findAll();
+    // Board findById(@Param("id") String id);
+    // Long insert(Board board);
+    // Long update(Board board);
+    // Long deleteById(@Param("id") String id);
 
-    int getTotalBoardCount();
+    // int getTotalBoardCount();
 
+    //
+    // List<Board> findAllWithPaging(@Param("offset") int offset,
+    //                               @Param("limit") int limit,
+    //                               @Param("sortField") String sortField,
+    //                               @Param("sortDir") String sortDir);
+    //
+    // List<Map<String, Object>> getListBoard(PageList<?> pageList);
 
-    List<Board> findAllWithPaging(@Param("offset") int offset,
-                                  @Param("limit") int limit,
-                                  @Param("sortField") String sortField,
-                                  @Param("sortDir") String sortDir);
+    // int getListBoardCount(Board board);
 
-    List<Map<String, Object>> getListBoard(PageList<?> pageList);
-
-    int getListBoardCount(Board board);
 
     // 목록
     public List<Board> list() throws Exception;
@@ -37,4 +38,14 @@ public interface BoardMapper {
     public List<Board> page(Pagination pagination) throws Exception;
     // 데이터 수
     public long count() throws Exception;
+    // 조회
+    public Board select(Integer no) throws Exception;
+    // 등록
+    public Long insert(Board post) throws Exception;
+    // 수정
+    public Long update(Board post) throws Exception;
+    // 삭제
+    public int delete(Integer no) throws Exception;
 }
+
+
