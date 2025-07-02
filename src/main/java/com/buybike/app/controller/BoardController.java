@@ -24,7 +24,7 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@RequestMapping("/boards")
+@RequestMapping("/board")
 public class BoardController {
     @Autowired
     private BoardService boardService;
@@ -116,88 +116,6 @@ public class BoardController {
 //
 //
 
-
-    // 전체 게시글 목록 가져오기 (1페이지, id 내림차순 기본)
-//    @GetMapping("/list")
-//    public String viewHomePage(Model model) {
-//        return viewPage(1, "id", "desc", model);
-//    }
-
-    // 페이징 및 정렬된 게시글 목록 가져오기
-    // @GetMapping("/page")
-    // public String viewPage(@RequestParam("pageNum") int pageNum,
-    //                        @RequestParam("sortField") String sortField,
-    //                        @RequestParam("sortDir") String sortDir,
-    //                        Model model) {
-    //     int pageSize = 10; // 한 페이지에 보여줄 게시글 수
-    //     List<Board> listBoard = boardService.listAll(pageNum, pageSize, sortField, sortDir);
-    //     int totalItems = boardService.getTotalBoardCount();
-    //     int totalPages = (int) Math.ceil((double) totalItems / pageSize);
-    //
-    //     model.addAttribute("currentPage", pageNum);
-    //     model.addAttribute("totalPages", totalPages);
-    //     model.addAttribute("totalItems", totalItems);
-    //     model.addAttribute("sortField", sortField);
-    //     model.addAttribute("sortDir", sortDir);
-    //     model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
-    //     model.addAttribute("boardList", listBoard);
-    //     return "board/list";
-    // }
-
-    // 게시글 글쓰기 페이지 출력
-    // @GetMapping("/write")
-    // public String post() {
-    //     return "board/write";
-    // }
-    //
-    // // 게시글 글쓰기 저장
-    // @PostMapping("/write")
-    // public String write(BoardFormDto boardDto) {
-    //     boardService.savePost(boardDto);
-    //     return "redirect:/board/list";
-    // }
-    //
-    // // 게시글 상세 보기
-    // @GetMapping("/view/{boardId}")
-    // public String requestUpdateMemberForm(@PathVariable(name = "id") String id,
-    //                                       HttpServletRequest httpServletRequest, Model model) {
-    //     Board board = boardService.getBoardById(id);
-    //     model.addAttribute("boardFormDto", board);
-    //     HttpSession session = httpServletRequest.getSession(true);
-    //     Member member = (Member) session.getAttribute("userLoginInfo");
-    //     model.addAttribute("buttonOk", false);
-    //     if (member != null && board.getMemberId().equals(member.getMemberId())) {
-    //         model.addAttribute("buttonOk", true);
-    //     }
-    //     return "board/view";
-    // }
-    //
-    // // 게시글 수정
-    // @PostMapping("/update")
-    // public String submitUpdateMember(@Valid BoardFormDto boardDto, BindingResult bindingResult, Model model) {
-    //     if (bindingResult.hasErrors())
-    //         return "board/view";
-    //     try {
-    //         boardService.updateBoard(boardDto);
-    //     } catch (IllegalStateException e) {
-    //         model.addAttribute("errorMessage", e.getMessage());
-    //         return "board/view";
-    //     }
-    //     return "redirect:/board/list";
-    // }
-    //
-    // // 게시글 삭제
-    // @GetMapping("/delete/{id}")
-    // public String deleteOrder(@PathVariable(name = "id") String id) {
-    //     boardService.deleteBoardById(id);
-    //     return "redirect:/board/list";
-    // }
-
-    // @GetMapping("")
-    // public ResponseEntity<?> getListBoard(Board board, @PageableDefault(size = 10) Pageable pageable) {
-    //     return ResponseEntity.ok(boardService.getListBoard(board, pageable));
-    // }
-
     @GetMapping("/list")
     public String list(Model model, Pagination pagination) throws Exception {
         int page = (int) pagination.getPage();
@@ -207,15 +125,100 @@ public class BoardController {
         model.addAttribute("pageInfo", pageInfo);
 
         // Uri 빌더
-        String pageUri = UriComponentsBuilder.fromPath("/boards/list")
+        String pageUri = UriComponentsBuilder.fromPath("/board/list")
                 .queryParam("size", pageInfo.getSize())
                 .queryParam("count", pageInfo.getPageSize())
                 .build()
                 .toUriString();
 
         model.addAttribute("pageUri", pageUri);
-        log.info("pageUri: {}",pageUri);
+        log.info("pageUri: {}", pageUri);
         return "board/list";
+    }
+
+    // 게시글 조회 화면
+    @GetMapping("/view/{no}")
+    public String view(@PathVariable("no") Integer no, Model model) throws Exception {
+        // 데이터 요청
+        Board board = boardService.select(no);
+        // 모델 등록
+        model.addAttribute("board", board);
+        return "board/view";
+    }
+
+    // 게시글 등록
+    @GetMapping("/create")
+    public String create(@ModelAttribute(value = "boardFormDto") BoardFormDto boardFormDto) {
+        return "board/create";
+    }
+
+    @PostMapping(path="/create")
+    public String createPostForm(BoardFormDto boardFormDto) throws Exception {
+        // 데이터 요청
+        boolean result = boardService.insert(boardFormDto.toEntity());
+        // 리다이렉트
+        // 데이터 처리 성공
+        if (result)
+            return "redirect:/board/list";
+        return "redirect:/board/create?error=true";
+    }
+//
+//    @PostMapping("/create")
+//    public String createPostForm(@Valid BoardFormDto boardFormDto, Model model) {
+//        try {
+//            Board board = boardFormDto.toEntity();
+//            boardService.insert(board);
+//            return "redirect:/boards/list";
+//        } catch (Exception e) {
+//            model.addAttribute("errorMessage", "게시글 등록에 실패했습니다.");
+//            return "board/create";
+//        }
+//    }
+
+
+    // 회원 정보 수정 페이지 출력하기
+    @GetMapping("/update/{no}")
+    public String update(@PathVariable("no") Integer no, Model model) throws Exception {
+        // 데이터 요청
+        Board board = boardService.select(no);
+        // 모델 등록
+        model.addAttribute("board", board);
+        return "board/update";
+    }
+
+
+
+    @PostMapping("/update")
+    public String updatePostForm(@Valid BoardFormDto boardFormDto, BindingResult bindingResult) throws Exception {
+        if (bindingResult.hasErrors()) {
+            // 유효성 검사 실패 시, 다시 수정 폼으로 돌아감
+            return "board/update";
+        }
+
+        // 데이터 요청
+        boolean result = boardService.update(boardFormDto);
+
+        // 데이터 처리 성공
+        if (result) {
+            return "redirect:/board/list";
+        }
+
+        // 데이터 처리 실패 시, 게시글 번호를 포함하여 리다이렉트
+        return "redirect:/board/update/" + boardFormDto.getId() + "?error=true";
+    }
+
+
+    // 게시글 삭제
+    @PostMapping("/delete/{no}")
+    public String boardDelete(@PathVariable("no") Integer no) throws Exception {
+        // 데이터 요청
+        boolean result = boardService.delete(no);
+        // 리다이렉트
+        // 데이터 처리 성공
+        if (result)
+            return "redirect:/board/list";
+        // 데이터 처리 실패
+        return "rediredct:/board/view/" + no + "?error=true";
     }
 }
 

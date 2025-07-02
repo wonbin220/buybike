@@ -21,7 +21,7 @@ import java.util.Map;
 public class BoardService {
 
     @Autowired
-    BoardMapper boardMapper;
+    private BoardMapper boardMapper;
 
 
     // public int getTotalBoardCount() {
@@ -47,6 +47,28 @@ public class BoardService {
     //
     //     return new PageImpl<>(content, pageable, total);
     // }
+
+
+    public List<Board> list() throws Exception {
+        return boardMapper.list();
+    }
+
+    public Board select(Integer no) throws Exception {
+        return boardMapper.select(no);
+    }
+
+    public boolean insert(Board board) throws Exception {
+        return boardMapper.insert(board);
+    }
+
+    public boolean update(BoardFormDto boardFormDto) throws Exception {
+        return boardMapper.update(boardFormDto.toEntity());
+    }
+
+    public boolean delete(Integer no) throws Exception {
+        return boardMapper.delete(no);
+    }
+
 
 
     // PageHelper를 사용한 페이징 처리

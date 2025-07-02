@@ -20,14 +20,14 @@
 <!--        WHERE id = #{id}-->
 <!--    </select>-->
 
-<!--    <update id="update" parameterType="com.buybike.app.domain.Board">-->
+<!--    <update.html id="update.html" parameterType="com.buybike.app.domain.Board">-->
 <!--        UPDATE board-->
 <!--        SET memberId = #{memberId},-->
 <!--            title = #{title},-->
 <!--            content = #{content},-->
 <!--            regDt = NOW()-->
 <!--        WHERE id = #{id}-->
-<!--    </update>-->
+<!--    </update.html>-->
 
 
     <!-- 목록 -->

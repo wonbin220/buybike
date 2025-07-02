@@ -17,7 +17,7 @@
                 <img class="d-block mx-auto" src="/assets/brand/bootstrap-logo.svg" alt="" width="40" height="32">
                 <span class="fs-4">Simple header</span> </a>
             <ul class="nav nav-pills">
-                <li class="nav-item"><a href="/boards/list" class="nav-link active" aria-current="page">게시판</a></li>
+                <li class="nav-item"><a th:href="@{/board/list}" class="nav-link active" aria-current="page">게시판</a></li>
                 <li class="nav-item"><a href="#" class="nav-link">Features</a></li>
                 <li class="nav-item"><a href="#" class="nav-link">Pricing</a></li>
                 <li class="nav-item"><a href="#" class="nav-link">FAQs</a></li>
@@ -34,7 +34,7 @@
             <div>
                 <select class="form-select" aria-label="Default select example"
                         th:field="${pageInfo.size}"
-                        onchange="location.href = '/BuyBike/boards/list?page=1&size=' + this.value">
+                        onchange="location.href = '[[@{/board/list?page=1&size=}]]' + this.value">
                     <option value="5" >5 개씩 보기</option>
                     <option value="10" >10 개씩 보기</option>
                     <option value="30" >30 개씩 보기</option>
@@ -64,7 +64,7 @@
                 <tr>
                     <td><th:block th:text="${board.no}"></th:block></td>
                     <td>
-                        <a th:href="@{/board/read/{no}(no=${board.no})}">
+                        <a th:href="@{/board/view/{no}(no=${board.no})}">
                             <th:block th:text="${board.title}"></th:block>
                         </a>
                     </td>
@@ -77,7 +77,7 @@
         </table>
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                <a href="/BuyBike/boards/add" class="btn btn-primary">글쓰기</a>
+                <a th:href="@{/board/create}" class="btn btn-primary">글쓰기</a>
             </div>
             <div>
                 <span th:text="'총 ' + ${pageInfo.total} + '건'"></span>
@@ -119,6 +119,6 @@
             </ul>
         </nav>
     </div>
-
+    </div>
 </body>
 </html>

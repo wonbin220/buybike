@@ -24,6 +24,7 @@ public class BoardFormDto  {
     private MultipartFile boardImage; // 게시판 이미지 URL
     public Board toEntity() {
         Board build = Board.builder()
+                .no(no)
                 .id(id)
                 .title(title)
                 .content(content)
@@ -36,7 +37,8 @@ public class BoardFormDto  {
         return build;
     }
 
-    public BoardFormDto(String id, String title, String content, String memberId,  LocalDateTime createdAt) {
+    public BoardFormDto(Long no, String id, String title, String content, String memberId,  LocalDateTime createdAt) {
+        this.no = no;
         this.id = id;
         this.title = title;
         this.content = content;

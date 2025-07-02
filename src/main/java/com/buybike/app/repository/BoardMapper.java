@@ -16,7 +16,7 @@ public interface BoardMapper {
     // List<Board> findAll();
     // Board findById(@Param("id") String id);
     // Long insert(Board board);
-    // Long update(Board board);
+    // Long update.html(Board board);
     // Long deleteById(@Param("id") String id);
 
     // int getTotalBoardCount();
@@ -41,11 +41,11 @@ public interface BoardMapper {
     // 조회
     public Board select(Integer no) throws Exception;
     // 등록
-    public Long insert(Board post) throws Exception;
+    public boolean insert(Board board) throws Exception;
     // 수정
-    public Long update(Board post) throws Exception;
+    public boolean update(Board board) throws Exception;
     // 삭제
-    public int delete(Integer no) throws Exception;
+    public boolean delete(Integer no) throws Exception;
 }
 
 
