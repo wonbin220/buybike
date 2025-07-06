@@ -56,8 +56,9 @@
         function remove() {
             const check = confirm(`정말로 삭제하시겠습니까?`)
             if( !check ) return
-            $form.action = `/board/delete/${no}`
+            $form.action = `/BuyBike/board/delete/${no}`
             $form.submit()
+
         }
 
         async function updateData() {
