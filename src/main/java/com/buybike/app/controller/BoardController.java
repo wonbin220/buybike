@@ -162,18 +162,6 @@ public class BoardController {
             return "redirect:/board/list";
         return "redirect:/board/create?error=true";
     }
-//
-//    @PostMapping("/create")
-//    public String createPostForm(@Valid BoardFormDto boardFormDto, Model model) {
-//        try {
-//            Board board = boardFormDto.toEntity();
-//            boardService.insert(board);
-//            return "redirect:/boards/list";
-//        } catch (Exception e) {
-//            model.addAttribute("errorMessage", "게시글 등록에 실패했습니다.");
-//            return "board/create";
-//        }
-//    }
 
 
     // 회원 정보 수정 페이지 출력하기

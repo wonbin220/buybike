@@ -12,7 +12,7 @@
 <!--        SELECT * FROM member WHERE num = #{num}-->
 <!--    </select>-->
 
-    <select id="findAll" resultType="com.buybike.app.domain.Member">
+    <select id="list" resultType="com.buybike.app.domain.Member">
         SELECT * FROM member
     </select>
 

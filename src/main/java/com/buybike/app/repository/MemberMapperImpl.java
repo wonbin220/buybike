@@ -16,6 +16,11 @@ public class MemberMapperImpl implements MemberMapper {
 
 
     @Override
+    public List<Member> list() {
+        return memberMapper.list();
+    }
+
+    @Override
     public Member findByMemberId(String memberId) {
         return memberMapper.findByMemberId(memberId);
     }

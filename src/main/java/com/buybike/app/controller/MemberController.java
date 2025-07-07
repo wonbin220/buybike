@@ -1,9 +1,13 @@
 package com.buybike.app.controller;
 
+import com.buybike.app.domain.Board;
 import com.buybike.app.domain.Member;
 import com.buybike.app.domain.MemberFormDto;
+import com.buybike.app.domain.Pagination;
 import com.buybike.app.service.MemberService;
+import com.github.pagehelper.PageInfo;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,9 +18,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.util.UriComponentsBuilder;
 
+@Slf4j
 @Controller
-@RequestMapping(value = "/members")
+@RequestMapping(value = "/member")
 public class MemberController {
 
     @Autowired
@@ -49,6 +55,30 @@ public class MemberController {
         }
         return "redirect:/members";
     }
+
+    // 회원 목록 페이지 출력하기
+    @GetMapping("/list")
+    public String list(Model model, Pagination pagination) throws Exception {
+        int page = (int) pagination.getPage();
+        int size = (int) pagination.getSize();
+        PageInfo<Member> memberPageInfo = memberService.page(page, size);
+        log.info("memberPageInfo: {}", memberPageInfo);
+        model.addAttribute("memberPageInfo", memberPageInfo);
+
+        // Uri 빌더
+        String memberPageUri = UriComponentsBuilder.fromPath("/member/memberList")
+                .queryParam("size", memberPageInfo.getSize())
+                .queryParam("count", memberPageInfo.getPageSize())
+                .build()
+                .toUriString();
+
+        model.addAttribute("memberPageUri", memberPageUri);
+        log.info("memberPageUri: {}", memberPageUri);
+        return "member/memberList";
+    }
+
+
+
 
     // 회원 정보 수정 페이지 출력하기
     @GetMapping(value= "/update/{memberId}")
