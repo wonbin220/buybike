@@ -17,7 +17,7 @@
             <img class="d-block mx-auto" src="/assets/brand/bootstrap-logo.svg" alt="" width="40" height="32">
             <span class="fs-4">Simple header</span> </a>
         <ul class="nav nav-pills">
-            <li class="nav-item"><a th:href="@{/member/meberList}" class="nav-link active" aria-current="page">게시판</a></li>
+            <li class="nav-item"><a th:href="@{/member/memberList}" class="nav-link active" aria-current="page">게시판</a></li>
             <li class="nav-item"><a href="#" class="nav-link">Features</a></li>
             <li class="nav-item"><a href="#" class="nav-link">Pricing</a></li>
             <li class="nav-item"><a href="#" class="nav-link">FAQs</a></li>
@@ -48,13 +48,10 @@
         <thead class="table-dark">
         <tr>
             <th>번호</th>
-            <th>제목</th>
+            <th>아이디</th>
             <th>작성자</th>
             <th>비밀번호</th>
-            <th>전화번호</th>
-            <th>이메일</th>
-            <th>주소</th>
-            <th>생성시간</th>
+
         </tr>
         </thead>
         <tbody>
@@ -67,17 +64,12 @@
             <tr>
                 <td><th:block th:text="${member.num}"></th:block></td>
                 <td>
-                    <a th:href="@{/member/view/{num}(num=${member.num})}">
+                    <a th:href="@{/member/memberView/{num}(num=${member.num})}">
                         <th:block th:text="${member.memberId}"></th:block>
                     </a>
                 </td>
                 <td><th:block th:text="${member.memberName}"></th:block></td>
                 <td><th:block th:text="${member.password}"></th:block></td>
-                <td><th:block th:text="${member.phone}"></th:block></td>
-                <td><th:block th:text="${member.email}"></th:block></td>
-                <td><th:block th:text="${member.address}"></th:block></td>
-                <td><th:block th:text="${#temporals.format(member.regDt, 'yyyy-MM-dd HH:mm:ss') }"></th:block></td>
-
             </tr>
         </th:block>
         </tbody>

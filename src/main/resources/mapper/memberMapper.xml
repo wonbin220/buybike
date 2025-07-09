@@ -8,13 +8,18 @@
         SELECT * FROM member WHERE memberId = #{memberId}
     </select>
 
-<!--    <select id="findById" resultType="com.buybike.app.domain.Member">-->
-<!--        SELECT * FROM member WHERE num = #{num}-->
-<!--    </select>-->
-
     <select id="list" resultType="com.buybike.app.domain.Member">
         SELECT * FROM member
     </select>
+
+    <!-- 조회 -->
+    <select id="select" resultType="com.buybike.app.domain.Member">
+        SELECT *
+        FROM member
+        WHERE num = #{num}
+    </select>
+
+
 
     <insert id="insert" parameterType="com.buybike.app.domain.Member" useGeneratedKeys="true" keyProperty="num">
         INSERT INTO member

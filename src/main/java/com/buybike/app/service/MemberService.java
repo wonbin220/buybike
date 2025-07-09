@@ -49,6 +49,12 @@ public class MemberService implements UserDetailsService {
         return memberMapper.findByMemberId(memberId) != null;
     }
 
+    public Member select(Long num) throws Exception {
+        return memberMapper.select(num);
+    }
+
+
+
     private void validateDuplicateMember(Member member) { // 회원 id 중복 체크하기
         Member findMember = memberMapper.findByMemberId(member.getMemberId());
         if(findMember != null) {

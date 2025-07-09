@@ -1,0 +1,119 @@
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판 목록</title>
+    <link href="/BuyBike/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<style>
+    a {
+        text-decoration:none;
+    }
+</style>
+<body>
+<div class="container">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+            <img class="d-block mx-auto" src="/assets/brand/bootstrap-logo.svg" alt="" width="40" height="32">
+            <span class="fs-4">Simple header</span> </a>
+        <ul class="nav nav-pills">
+            <li class="nav-item"><a th:href="@{/member/memberList}" class="nav-link active" aria-current="page">게시판</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Features</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Pricing</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">FAQs</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">About</a></li>
+        </ul>
+    </header>
+</div>
+
+<div class="container my-5 py-5">
+    <h1 class="text-center">회원상세정보</h1>
+    <div class="d-flex justify-content-between align-items-center my-3">
+        <div></div>
+
+    </div>
+    <form th:action="@{/member/update}" method="post" th:object="${member}" enctype="multipart/form-data">
+        <table border="1">
+            <tr>
+                <td>no</td>
+                <td>
+                    <input type="text" name="num" th:field="*{num}" readonly>
+                    <!-- <input type="text" id="title" name="title" th:value="*{title}"> -->
+                </td>
+            </tr>
+            <tr>
+                <td>아이디</td>
+                <td>
+                    <input type="text" th:field="*{memberId}" readonly>
+                </td>
+            </tr>
+            <tr>
+                <td>이름</td>
+                <td>
+                    <input type="text" th:field="*{memberName}">
+                </td>
+            </tr>
+            <tr>
+                <td>비밀버호</td>
+                <td>
+                    <input type="text" th:field="*{password}">
+                </td>
+            </tr>
+            <tr>
+                <td>전화번호</td>
+                <td>
+                    <input type="text" th:field="*{phone}">
+                </td>
+            </tr>
+            <tr>
+                <td>이메일</td>
+                <td>
+                    <input type="text" th:field="*{email}">
+                </td>
+            </tr>
+            <tr>
+                <td>주소</td>
+                <td>
+                    <input type="text" th:field="*{address}">
+                </td>
+            </tr>
+            <tr>
+                <td>생성일자</td>
+                <td>
+                    <input type="text" th:field="*{regDt}" readonly>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="right">
+                    <button type="button" onclick="location.href='/BuyBike/member/list'">목록</button>
+                    <button type="button"
+                            th:onclick="location.href='/BuyBike/member/update/' + [[${member.memberId}]]">수정</button>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2" align="right">
+                    <button type="button" onclick="location.href='/BuyBike/member/list'">목록</button>
+                    <button type="submit">수정</button>
+                    <button type="button" onclick="remove()">삭제</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+
+<script>
+    const $form = document.getElementById('form')
+    const memberId = [[${member.memberId}]];
+
+    function remove() {
+        const check = confirm(`정말로 삭제하시겠습니까?`)
+        if( !check ) return
+        $form.action = `/BuyBike/member/delete/${memberId}`
+        $form.submit()
+
+    }
+</script>
+</body>
+</html>

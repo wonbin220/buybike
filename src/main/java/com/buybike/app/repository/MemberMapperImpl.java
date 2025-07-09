@@ -36,6 +36,11 @@ public class MemberMapperImpl implements MemberMapper {
     }
 
     @Override
+    public Member select(Long num) throws Exception {
+        return memberMapper.select(num);
+    }
+
+    @Override
     public Long insert(Member member) {
         return memberMapper.insert(member);
     }

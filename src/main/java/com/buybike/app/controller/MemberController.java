@@ -77,8 +77,15 @@ public class MemberController {
         return "member/memberList";
     }
 
-
-
+    // 회원 상세 화면
+    @GetMapping("/memberView/{num}")
+    public String view(@PathVariable("num") Long num, Model model) throws Exception {
+        // 데이터 요청
+        Member member = memberService.select(num);
+        // 모델 등록
+        model.addAttribute("member", member);
+        return "member/memberView";
+    }
 
     // 회원 정보 수정 페이지 출력하기
     @GetMapping(value= "/update/{memberId}")
@@ -116,7 +123,7 @@ public class MemberController {
             model.addAttribute("errorMessage", e.getMessage());
             return "member/updateMember";
         }
-        return "redirect:/members";
+        return "redirect:/member/list";
     }
     // 회원 정보 삭제하기
     @GetMapping("/delete/{memberId}")

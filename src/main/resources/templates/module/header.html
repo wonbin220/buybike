@@ -12,10 +12,10 @@
            class="nav-link">도서등록 &nbsp;| &nbsp;</a>
         <a sec:authorize="hasRole('ROLE_ADMIN')" href="order/list"
            class="nav-link">주문목록 &nbsp;| &nbsp;</a>
-        <a href="/BuyBike/boards/list" class="nav-link">게시판 &nbsp;|&nbsp;</a>
-        <a sec:authorize="isAnonymous()" href="/BuyBike/members/add" class="navlink">회원가입 &nbsp;| &nbsp;</a>-->
+        <a href="/BuyBike/board/list" class="nav-link">게시판 &nbsp;|&nbsp;</a>
+        <a sec:authorize="isAnonymous()" href="/BuyBike/member/add" class="navlink">회원가입 &nbsp;| &nbsp;</a>-->
         <a sec:authorize="isAnonymous()" href="login" class="nav-link">로그인 &nbsp;| &nbsp;</a>
-        <a sec:authorize="isAuthenticated()" th:href="'members/update/'+${session.userLoginInfo.memberId}" class="nav-link">회원수정 &nbsp;|
+        <a sec:authorize="isAuthenticated()" th:href="'member/update/'+${session.userLoginInfo.memberId}" class="nav-link">회원수정 &nbsp;|
             &nbsp;</a>
         <a sec:authorize="isAuthenticated()" href="logout" class="navlink">로그아웃 &nbsp;| &nbsp;</a>
         <b sec:authorize="isAuthenticated()"><span sec:authentication='name'></span>님
