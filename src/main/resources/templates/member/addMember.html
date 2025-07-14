@@ -26,7 +26,7 @@
         <div class="alert alert-danger" th:if="${errorMessage!=null}">
             [[${errorMessage}]]<br/>
         </div>
-        <form th:object="${memberFormDto}" name="member" action="/BuyBike/members/add" method="post">
+        <form th:object="${memberFormDto}" name="member" action="/BuyBike/member/add" method="post">
             <legend>신규 회원 가입</legend>
             <div class="mb-3 row">
                 <label class="col-sm-2 control-label">회원 ID</label>

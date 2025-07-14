@@ -34,7 +34,7 @@
         <div>
             <select class="form-select" aria-label="Default select example"
                     th:field="${memberPageInfo.size}"
-                    onchange="location.href = '[[@{/member/list?page=1&size=}]]' + this.value">
+                    onchange="location.href = '/BuyBike/member/list?page=1&size=' + this.value">
                 <option value="5" >5 개씩 보기</option>
                 <option value="10" >10 개씩 보기</option>
                 <option value="30" >30 개씩 보기</option>
@@ -64,7 +64,7 @@
             <tr>
                 <td><th:block th:text="${member.num}"></th:block></td>
                 <td>
-                    <a th:href="@{/member/memberView/{num}(num=${member.num})}">
+                    <a th:href="@{/member/update/{memberId}(memberId=${member.memberId})}">
                         <th:block th:text="${member.memberId}"></th:block>
                     </a>
                 </td>

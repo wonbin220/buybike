@@ -23,7 +23,7 @@
         </div>
     </div>
     <div class="row align-items-md-stretch">
-        <form th:object="${memberFormDto}" name="member" action="/BuyBike/members/update" method="post">
+        <form th:object="${memberFormDto}" name="member" action="/BuyBike/member/update" method="post">
             <legend>회원 수정</legend>
             <div class="mb-3 row">
                 <label class="col-sm-2 control-label">회원 ID</label>
@@ -45,7 +45,8 @@
             <div class="mb-3 row">
                 <label class="col-sm-2 control-label">비밀번호</label>
                 <div class="col-sm-3">
-                    <input type="text" name="password" class="form-control"/>
+                    <input type="text" name="password" class="form-control"
+                            th:field="*{password}"/>
                 </div>
                 <div class="col-sm-6">
                     <p class="text-danger" th:errors="*{password}"/>
@@ -54,7 +55,7 @@
             <div class="mb-3 row">
                 <label class="col-sm-2 control-label">비밀번호 확인</label>
                 <div class="col-sm-3">
-                    <input type="text" name="password_confirm" class="form-control"/>
+                    <input type="text" name="password_confirm" class="form-control">
                 </div>
             </div>
             <div class="mb-3 row">
@@ -87,7 +88,7 @@
             <a th:href="'javascript:checkPasswd()'" class="btn btn-success">수정</a>
             <a th:href="@{'/member/delete/' + ${memberId}}" class="btn btn-danger">
                 삭제</a>
-            <input type="reset" class="btn btn-Secondary" value ="취소"/>
+            <a th:href="@{/member/list}" class="btn btn-secondary">취소</a>
         </div>
     </div>
             </div>
@@ -95,7 +96,5 @@
     <th:block th:replace="~{module/footer}"></th:block>
     </div>
 </div>
-</body>
-</html>
 </body>
 </html>

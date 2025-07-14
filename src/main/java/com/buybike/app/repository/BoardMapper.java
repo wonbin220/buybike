@@ -1,14 +1,11 @@
 package com.buybike.app.repository;
 
 import com.buybike.app.domain.Board;
-import com.buybike.app.domain.PageList;
 import com.buybike.app.domain.Pagination;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 
 @Mapper
 @Repository
