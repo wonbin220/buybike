@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -55,7 +56,11 @@ public class SecurityConfig {
                         logout -> logout
                                 .logoutUrl("/logout")
                                 .logoutSuccessUrl("/login")
-                );
+                )
+                .headers((headers) -> headers
+                        .addHeaderWriter(new XFrameOptionsHeaderWriter(
+                                XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
+                );// X-Frame-Options 헤더 설정
         return http.build();
     }
 }

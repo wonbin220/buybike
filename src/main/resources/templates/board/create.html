@@ -7,8 +7,8 @@
 </head>
 <body>
 <h1>게시글 등록</h1>
-<form th:action="{/board/create}" method="post" th:object="${boardFormDto}" enctype="multipart/form-data" >
-    <table border="1">
+<form th:action="@{/board/create}" method="post" th:object="${boardFormDto}"  onsubmit="return submitContents();" enctype="multipart/form-data" >
+    <table style="width: 100%; height: 500px; border: 1px solid black;">
         <tr>
             <td>제목</td>
             <td>
@@ -24,7 +24,7 @@
         <tr>
             <td>내용</td>
             <td>
-                <textarea name="content" th:field="*{content}" rows="5" cols="40"></textarea>
+                <textarea th:field="*{content}"  rows="10" cols="100"></textarea>
             </td>
         </tr>
         <tr>
@@ -42,87 +42,127 @@
     </table>
 
 </form>
+<script th:src="@{/smarteditor/js/HuskyEZCreator.js}" charset="utf-8"></script>
+<script type="text/javascript" th:inline="javascript">
+    var oEditors = [];
+    nhn.husky.EZCreator.createInIFrame({
+        oAppRef: oEditors,
+        elPlaceHolder: "content",
+        sSkinURI: /*[[@{/smarteditor/SmartEditor2Skin.html}]]*/,
+        htParams : {
+            bUseToolbar : true,
+            fOnBeforeUnload : function(){
+                // 경고 메시지 표시
+                // alert("아싸!");
+            }
+        },
+        // iframe 로드 완료 후 실행될 콜백 함수 지정
+        fOnAppLoad : function(){
+            // 예: 첫 번째 에디터의 내용을 "Hello World"로 설정
+            // oEditors.getById["content"].exec("PASTE_HTML", ["Hello World"]);
+        },
+        fCreator: "createSEditor2"
+    });
 
-<script>
-    /*
+
+    // 에디터 내용을 textarea에 업데이트하는 함수
+    function updateEditorContent() {
+        if(oEditors.length > 0) {
+            oEditors.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+        }
+    }
+
+    // form 제출 시 호출될 함수
+    function submitContents() {
+        updateEditorContent();
+        // form 제출을 계속 진행하기 위해 true 반환
+        return true;
+    }
+
+        /*
         AJAX
         [POST]
         - /posts
         - data : JSON
     */
-    // AJAX : XMLHttpRequest, fetch(), $.ajax(), axios
 
-    function create() {
-        const data = {
-            title : document.getElementById("title").value,
-            memberId : document.getElementById("memberId").value,
-            content : document.getElementById("content").value
-        }
+        // AJAX : XMLHttpRequest, fetch(), $.ajax(), axios
 
-        // 비동기 요청
-        const url = `/board`
-        fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type" : "application/json"
-            },
-            body: JSON.stringify(data)
-        })
-            // 요청 성공 시
-            // .then( 성공 시 콜백함수 )
-            .then( (response) => {
-                console.log(response);
-                if( !response.ok ) {
-                    alert("데이터 등록 실패")
-                    return
-                }
-                // 응답 메시지
-                // JSON : response.json()
-                // TEXT : response.text()
-                return response.text()
-            })
-            .then(result => {
-                alert(result)
-                alert("데이터 등록 성공")
-                location.href = `/board/list`
-            })
-            // 요청 실패 시
-            // .catch( 실패 시 콜백함수 )
-            .catch( err => {
-                console.log(err);
-            })
-    }
+        function create() {
+            updateEditorContent(); // AJAX 호출 전 내용 업데이트
 
-    async function createAsync() {
-        const data = {
-            title : document.getElementById("title").value,
-            memberId : document.getElementById("memberId").value,
-            content : document.getElementById("content").value
-        }
+            const data = {
+                title: document.getElementById("title").value,
+                memberId: document.getElementById("memberId").value,
+                content: document.getElementById("content").value
+            }
 
-        // 비동기 요청
-        const url = `/boards`
-        try {
-            const response = await fetch(url, {
+            // 비동기 요청
+            const url = `/board`
+            fetch(url, {
                 method: "POST",
                 headers: {
-                    "Content-Type" : "application/json"
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify(data)
             })
-            if( !response.ok ) {
-                alert(`데이터 등록 실패`)
-                return
-            }
-            const result = await response.text()
-            alert(result)
-            alert(`데이터 등록 성공`)
-            location.href = `/board/list`
-        } catch (error) {
-            alert(`데이터 등록 실패`)
-            console.error(error)
+                // 요청 성공 시
+                // .then( 성공 시 콜백함수 )
+                .then((response) => {
+                    console.log(response);
+                    if (!response.ok) {
+                        alert("데이터 등록 실패")
+                        return
+                    }
+                    // 응답 메시지
+                    // JSON : response.json()
+                    // TEXT : response.text()
+                    return response.text()
+                })
+                .then(result => {
+                    alert(result)
+                    alert("데이터 등록 성공")
+                    location.href = `/board/list`
+                })
+                // 요청 실패 시
+                // .catch( 실패 시 콜백함수 )
+                .catch(err => {
+                    console.log(err);
+                })
         }
 
+        async function createAsync() {
+
+            updateEditorContent(); // AJAX 호출 전 내용 업데이트
+
+            const data = {
+                title: document.getElementById("title").value,
+                memberId: document.getElementById("memberId").value,
+                content: document.getElementById("content").value
+            }
+
+            // 비동기 요청
+            const url = `/board`
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                })
+                if (!response.ok) {
+                    alert(`데이터 등록 실패`)
+                    return
+                }
+                const result = await response.text()
+                alert(result)
+                alert(`데이터 등록 성공`)
+                location.href = `/board/list`
+            } catch (error) {
+                alert(`데이터 등록 실패`)
+                console.error(error);
+            }
     }
 </script>
 </body>
