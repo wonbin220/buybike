@@ -42,24 +42,23 @@
     </table>
 
 </form>
-<script th:src="@{/smarteditor/js/HuskyEZCreator.js}" charset="utf-8"></script>
+<script th:src="@{/smarteditor2/js/HuskyEZCreator.js}" charset="utf-8"></script>
 <script type="text/javascript" th:inline="javascript">
     var oEditors = [];
     nhn.husky.EZCreator.createInIFrame({
         oAppRef: oEditors,
         elPlaceHolder: "content",
-        sSkinURI: /*[[@{/smarteditor/SmartEditor2Skin.html}]]*/,
-        htParams : {
-            bUseToolbar : true,
-            fOnBeforeUnload : function(){
-                // 경고 메시지 표시
-                // alert("아싸!");
-            }
-        },
-        // iframe 로드 완료 후 실행될 콜백 함수 지정
+        sSkinURI: /*[[@{/smarteditor2/SmartEditor2Skin.html}]]*/,
         fOnAppLoad : function(){
-            // 예: 첫 번째 에디터의 내용을 "Hello World"로 설정
-            // oEditors.getById["content"].exec("PASTE_HTML", ["Hello World"]);
+            // sUrl에 컨트롤러의 @RequestMapping 경로를 정확히 기입합니다.
+            oEditors.getById["content"].getIR();
+            oEditors.getById["content"].exec("REGISTER_UI_EVENT", [
+                "photo_upload", {
+                    bUseAttachMode: false,
+                    // ⭐️ 서버 측 업로드 처리 URL
+                    sUrl: "/smarteditorMultiImageUpload"
+                }
+            ]);
         },
         fCreator: "createSEditor2"
     });

@@ -49,13 +49,13 @@
         </table>
 
     </form>
-    <script th:src="@{/smarteditor/js/HuskyEZCreator.js}" charset="utf-8"></script>
+    <script th:src="@{/smarteditor2/js/HuskyEZCreator.js}" charset="utf-8"></script>
     <script type="text/javascript" th:inline="javascript">
         var oEditors = [];
         nhn.husky.EZCreator.createInIFrame({
             oAppRef: oEditors,
             elPlaceHolder: "content",
-            sSkinURI: /*[[@{/smarteditor/SmartEditor2Skin.html}]]*/,
+            sSkinURI: /*[[@{/smarteditor2/SmartEditor2Skin.html}]]*/,
             htParams : {
                 bUseToolbar : true,
                 fOnBeforeUnload : function(){

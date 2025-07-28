@@ -57,6 +57,10 @@ public class SecurityConfig {
                                 .logoutUrl("/logout")
                                 .logoutSuccessUrl("/login")
                 )
+                .csrf(csrf -> csrf
+                        // ⭐️ 스마트에디터 이미지 업로드 경로에 대한 CSRF 비활성화
+                        .ignoringRequestMatchers("/smarteditorMultiImageUpload")
+                )
                 .headers((headers) -> headers
                         .addHeaderWriter(new XFrameOptionsHeaderWriter(
                                 XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
