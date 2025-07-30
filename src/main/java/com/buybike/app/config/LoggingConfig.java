@@ -9,8 +9,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class LoggingConfig implements WebMvcConfigurer {
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new MonitoringInterceptor());
-        registry.addInterceptor(new AuditingInterceptor());
+        public void addInterceptors(InterceptorRegistry registry) {
+            registry.addInterceptor(new MonitoringInterceptor());
+            registry.addInterceptor(new AuditingInterceptor());
     }
 }
