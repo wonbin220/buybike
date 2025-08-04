@@ -30,6 +30,7 @@ public class MemberController {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
     // 신규 회원 등록페이지 출력하기
     @GetMapping(value = "/add")
     public String requestAddMemberForm(Model model, Authentication authentication) {
@@ -53,7 +54,7 @@ public class MemberController {
             model.addAttribute("errorMessage", e.getMessage());
             return "member/addMember";
         }
-        return "redirect:/member";
+        return "redirect:/memberList";
     }
 
     // 회원 목록 페이지 출력하기
@@ -66,7 +67,7 @@ public class MemberController {
         model.addAttribute("memberPageInfo", memberPageInfo);
 
         // Uri 빌더
-        String memberPageUri = UriComponentsBuilder.fromPath("/member/memberList")
+        String memberPageUri = UriComponentsBuilder.fromPath("/member/list")
                 .queryParam("size", memberPageInfo.getSize())
                 .queryParam("count", memberPageInfo.getPageSize())
                 .build()

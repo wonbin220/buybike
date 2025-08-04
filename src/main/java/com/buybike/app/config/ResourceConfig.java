@@ -30,5 +30,10 @@ public class ResourceConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler(uploadPath)
                 .addResourceLocations(resourcePath);
+
+        // 정적 리소스(css, js, images 등) 경로
+        // 이 설정이 누락되면 페이지의 스타일이나 기능이 제대로 동작하지 않을 수 있습니다.
+        registry.addResourceHandler("/**")
+                .addResourceLocations("classpath:/static/");
     }
 }

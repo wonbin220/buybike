@@ -153,16 +153,30 @@ public class BoardController {
     }
 
     @PostMapping(path="/create")
-    public String createPostForm(BoardFormDto boardFormDto) throws Exception {
-        // 데이터 요청
-        boolean result = boardService.insert(boardFormDto.toEntity());
-        // 리다이렉트
-        // 데이터 처리 성공
-        if (result)
-            return "redirect:/board/list";
-        return "redirect:/board/create?error=true";
-    }
+    public String createPostForm(BoardFormDto boardFormDto, HttpSession session) throws Exception {
+        // 1. 세션에서 로그인한 회원 정보 가져오기
+        Member loginMember = (Member) session.getAttribute("loginMember");
 
+        // 로그인하지 않은 경우, 로그인 페이지로 리다이렉트
+        if (loginMember == null) {
+            return "redirect:/member/login";
+        }
+
+        // 2. DTO를 Entity로 변환하고 작성자 정보 설정
+        Board board = boardFormDto.toEntity();
+        board.setId(loginMember.getMemberId()); // Member 객체의 ID 필드명에 맞게 수정하세요.
+        board.setMemberId(loginMember.getMemberName());  // Member 객체의 이름 필드명에 맞게 수정하세요.
+
+        // 3. 서비스 계층에 데이터 저장 요청
+        boolean result = boardService.insert(board);
+
+        // 저장 성공 시 목록으로, 실패 시 작성 페이지로 리다이렉트
+        if (result) {
+            return "redirect:/board/list";
+        } else {
+            return "redirect:/board/create?error=true";
+        }
+    }
 
     // 회원 정보 수정 페이지 출력하기
     @GetMapping("/update/{no}")
