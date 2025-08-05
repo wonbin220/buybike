@@ -67,7 +67,7 @@ public class MemberController {
         model.addAttribute("memberPageInfo", memberPageInfo);
 
         // Uri 빌더
-        String memberPageUri = UriComponentsBuilder.fromPath("/member/list")
+        String memberPageUri = UriComponentsBuilder.fromPath("/member/memberList")
                 .queryParam("size", memberPageInfo.getSize())
                 .queryParam("count", memberPageInfo.getPageSize())
                 .build()
