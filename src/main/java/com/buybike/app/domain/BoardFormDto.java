@@ -1,6 +1,7 @@
 package com.buybike.app.domain;
 
 import lombok.*;
+import org.modelmapper.ModelMapper;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -44,6 +45,14 @@ public class BoardFormDto  {
         this.content = content;
         this.memberId = memberId; // 게시글 작성자의 ID
         this.createdAt = createdAt != null ? createdAt : LocalDateTime.now(); // 현재 시간으로 설정
+    }
+
+
+    private static ModelMapper modelMapper = new ModelMapper();
+
+    // Board 엔티티를 BoardFormDto로 변환하는 메서드
+    public static BoardFormDto of(Board board) {
+        return modelMapper.map(board, BoardFormDto.class);
     }
 }
 

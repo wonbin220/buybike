@@ -54,7 +54,7 @@ public class MemberController {
             model.addAttribute("errorMessage", e.getMessage());
             return "member/addMember";
         }
-        return "redirect:/memberList";
+        return "redirect:/member/list";
     }
 
     // 회원 목록 페이지 출력하기

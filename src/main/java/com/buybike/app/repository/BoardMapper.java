@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 @Repository
@@ -40,9 +41,14 @@ public interface BoardMapper {
     // 등록
     public boolean insert(Board board) throws Exception;
     // 수정
-    public boolean update(Board board) throws Exception;
+    //public boolean update(Board board) throws Exception;
+    public int update(Board board) throws Exception;
     // 삭제
     public boolean delete(Integer no) throws Exception;
+
+
+    // 게시글 ID로 조회
+    public Board findById(String id) throws Exception;
 }
 
 

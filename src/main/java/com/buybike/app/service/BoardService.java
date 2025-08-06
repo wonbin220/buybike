@@ -7,6 +7,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -15,7 +17,8 @@ public class BoardService {
 
     @Autowired
     private BoardMapper boardMapper;
-
+    @Autowired
+    private  FileService fileService; // 파일 업로드/삭제 서비스
 
     // public int getTotalBoardCount() {
     //     return boardMapper.getTotalBoardCount();
@@ -54,9 +57,57 @@ public class BoardService {
         return boardMapper.insert(board);
     }
 
+    // @Transactional
+    // public boolean insert(Board board, MultipartFile file) throws Exception {
+    //     // 파일 업로드 처리
+    //     String fileName = fileService.uploadFile(file);
+    //     board.setFileName(fileName);
+    //     int result = boardMapper.insert(board);
+    //     return result > 0;
+    // }
+
+    // public boolean update(BoardFormDto boardFormDto) throws Exception {
+    //     return boardMapper.update(boardFormDto.toEntity());
+    // }
+
     public boolean update(BoardFormDto boardFormDto) throws Exception {
-        return boardMapper.update(boardFormDto.toEntity());
+        // 1. DTO에서 게시글 ID로 기존 엔티티 조회
+        Board board = boardMapper.select(Integer.parseInt(boardFormDto.getId()));
+        if (board == null) {
+            throw new IllegalArgumentException("해당 게시글을 찾을 수 없습니다. id=" + boardFormDto.getId());
+        }
+
+
+        String originalFileName = board.getFileName(); // 기존 파일명
+        String newFileName = null;
+
+        // 2. 새로운 이미지 파일이 있는지 확인
+        MultipartFile boardImageFile = boardFormDto.getBoardImage();
+        if (boardImageFile != null && !boardImageFile.isEmpty()) {
+            // 3. 기존 파일이 있으면 삭제
+            if (originalFileName != null && !originalFileName.isEmpty()) {
+                fileService.deleteFile(originalFileName);
+            }
+            // 4. 새 파일 저장하고 새로운 파일 이름 얻기
+            newFileName = fileService.uploadFile(boardImageFile);
+        } else {
+            // 새 파일이 없으면 기존 파일 이름 유지
+            newFileName = originalFileName;
+        }
+
+        // 5. 게시글 정보 업데이트 (제목, 내용, 파일명)
+        board.setTitle(boardFormDto.getTitle());
+        board.setContent(boardFormDto.getContent());
+        board.setFileName(newFileName);
+
+
+        // 6. DB에 업데이트 요청
+        return boardMapper.update(board) > 0;
     }
+
+
+
+
 
     public boolean delete(Integer no) throws Exception {
         return boardMapper.delete(no);

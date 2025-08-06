@@ -1,9 +1,6 @@
 package com.buybike.app.controller;
 
-import com.buybike.app.domain.Board;
-import com.buybike.app.domain.BoardFormDto;
-import com.buybike.app.domain.Member;
-import com.buybike.app.domain.Pagination;
+import com.buybike.app.domain.*;
 import com.buybike.app.service.BoardService;
 import com.github.pagehelper.PageInfo;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
@@ -155,17 +153,17 @@ public class BoardController {
     @PostMapping(path="/create")
     public String createPostForm(BoardFormDto boardFormDto, HttpSession session) throws Exception {
         // 1. 세션에서 로그인한 회원 정보 가져오기
-        Member loginMember = (Member) session.getAttribute("loginMember");
+        MemberFormDto loginInfo = (MemberFormDto) session.getAttribute("userLoginInfo");
 
         // 로그인하지 않은 경우, 로그인 페이지로 리다이렉트
-        if (loginMember == null) {
-            return "redirect:/member/login";
+        if (loginInfo == null) {
+            return "redirect:/login";
         }
 
         // 2. DTO를 Entity로 변환하고 작성자 정보 설정
         Board board = boardFormDto.toEntity();
-        board.setId(loginMember.getMemberId()); // Member 객체의 ID 필드명에 맞게 수정하세요.
-        board.setMemberId(loginMember.getMemberName());  // Member 객체의 이름 필드명에 맞게 수정하세요.
+        board.setId(loginInfo.getMemberId()); // Member 객체의 ID 필드명에 맞게 수정하세요.
+        board.setMemberId(loginInfo.getMemberName());  // Member 객체의 이름 필드명에 맞게 수정하세요.
 
         // 3. 서비스 계층에 데이터 저장 요청
         boolean result = boardService.insert(board);
@@ -185,20 +183,48 @@ public class BoardController {
         Board board = boardService.select(no);
         // 모델 등록
         model.addAttribute("board", board);
+
+
+        // Board 엔티티를 BoardFormDto로 변환하여 모델에 추가
+        // BoardFormDto boardFormDto = BoardFormDto.of(board);
+        // model.addAttribute("boardFormDto", boardFormDto);
+
         return "board/update";
     }
 
 
+    //
+    // @PostMapping("/update")
+    // public String updatePostForm(@Valid BoardFormDto boardFormDto, BindingResult bindingResult) throws Exception {
+    //     if (bindingResult.hasErrors()) {
+    //         // 유효성 검사 실패 시, 다시 수정 폼으로 돌아감
+    //         return "board/update";
+    //     }
+    //
+    //     // 데이터 요청
+    //     boolean result = boardService.update(boardFormDto);
+    //
+    //     // 데이터 처리 성공
+    //     if (result) {
+    //         return "redirect:/board/list";
+    //     }
+    //
+    //     // 데이터 처리 실패 시, 게시글 번호를 포함하여 리다이렉트
+    //     return "redirect:/board/update/" + boardFormDto.getId() + "?error=true";
+    // }
 
     @PostMapping("/update")
-    public String updatePostForm(@Valid BoardFormDto boardFormDto, BindingResult bindingResult) throws Exception {
+    public String updatePostForm(@Valid BoardFormDto boardFormDto,
+                                 BindingResult bindingResult,
+                                 @RequestParam("file") MultipartFile file) throws Exception { // MultipartFile 파라미터 추가
         if (bindingResult.hasErrors()) {
             // 유효성 검사 실패 시, 다시 수정 폼으로 돌아감
-            return "board/update";
+            // 게시글 번호를 경로에 포함시켜야 폼이 제대로 로드됩니다.
+            return "redirect:/board/update/" + boardFormDto.getId();
         }
 
-        // 데이터 요청
-        boolean result = boardService.update(boardFormDto);
+        // 서비스의 update 메서드 호출 (파일과 함께)
+        boolean result = boardService.update(boardFormDto, file);
 
         // 데이터 처리 성공
         if (result) {
