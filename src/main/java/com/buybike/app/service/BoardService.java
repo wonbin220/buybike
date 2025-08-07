@@ -7,6 +7,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -15,7 +17,8 @@ public class BoardService {
 
     @Autowired
     private BoardMapper boardMapper;
-
+    @Autowired
+    private  FileService fileService; // 파일 업로드/삭제 서비스
 
     // public int getTotalBoardCount() {
     //     return boardMapper.getTotalBoardCount();
@@ -54,15 +57,13 @@ public class BoardService {
         return boardMapper.insert(board);
     }
 
-    public boolean update(BoardFormDto boardFormDto) throws Exception {
-        return boardMapper.update(boardFormDto.toEntity());
-    }
+     public boolean update(BoardFormDto boardFormDto) throws Exception {
+         return boardMapper.update(boardFormDto.toEntity());
+     }
 
     public boolean delete(Integer no) throws Exception {
         return boardMapper.delete(no);
     }
-
-
 
     // PageHelper를 사용한 페이징 처리
     public PageInfo<Board> page(int page, int size) throws Exception {

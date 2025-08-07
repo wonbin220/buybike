@@ -23,7 +23,7 @@ public class Board {
     @NotEmpty(message = "내용을 입력해주세요.")
     private String content;
     private String memberId;
-    private int Hits; // 조회수
+    private int hits; // 조회수
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime createdAt;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

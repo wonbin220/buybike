@@ -1,43 +1,138 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>게시글 조회</title>
+    <style>
+        table { width: 80%; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 10px; }
+        th { background-color: #f2f2f2; text-align: center; width: 15%; }
+        td { text-align: left; }
+        .content-div { min-height: 400px; }
+        .button-group { text-align: right; margin-top: 10px; }
+        .button-group button { padding: 5px 10px; cursor: pointer; }
+    </style>
 </head>
 <body>
-<h1>게시글 조회</h1>
-<form th:action="@{/board/create}" method="post" th:object="${board}" enctype="multipart/form-data">
-    <table style="width: 80%; height: 500px; border: 1px solid black;">
-        <tr>
-            <td>제목</td>
-            <td>
-                <input type="text" name="title" th:field="*{title}">
-                <!-- <input type="text" id="title" name="title" th:value="*{title}"> -->
-            </td>
-        </tr>
-        <tr>
-            <td>작성자</td>
-            <td>
-                <input type="text" th:field="*{memberId}">
-            </td>
-        </tr>
-        <tr>
-            <td>내용</td>
-            <td> <!-- HTML태그를 그대로 출력하기 위해 th:utext 사용 -->
-                <div th:utext="*{content}" style="width: 100%; height: 500px;"></div>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2" align="right">
-                <button type="button" onclick="location.href='/BuyBike/board/list'">목록</button>
-                <button type="button"
-                        th:onclick="location.href='/BuyBike/board/update/' + [[${board.no}]]">수정</button>
-            </td>
-        </tr>
 
+<h1>게시글 조회</h1>
+
+<!--/* 컨트롤러에서 전달된 board 객체를 사용 */-->
+<div th:object="${board}">
+    <table>
+        <colgroup>
+            <col style="width: 15%;">
+            <col style="width: 85%;">
+        </colgroup>
+        <tbody>
+        <tr>
+            <th>제목</th>
+            <!--/* th:text를 사용하여 객체의 title 필드 값을 출력 */-->
+            <td th:text="*{title}">게시글 제목이 표시됩니다.</td>
+        </tr>
+        <tr>
+            <th>작성자</th>
+            <td th:text="*{memberId}">작성자 이름이 표시됩니다.</td>
+        </tr>
+        <tr>
+            <th>내용</th>
+            <!--/* HTML 태그를 포함한 내용을 출력하기 위해 th:utext 사용 */-->
+            <td>
+                <div class="content-div" th:utext="*{content}">게시글 내용이 표시됩니다.</div>
+            </td>
+        </tr>
+        </tbody>
     </table>
 
-</form>
+    <div class="button-group">
+        <!--/* 타임리프의 URL 표현식 @{...}을 사용하여 링크 생성 */-->
+        <button type="button" th:onclick="|location.href='@{/board/list}'|">목록</button>
+        <!--
+          로그인한 상태이고(sec:authorize), 컨트롤러에서 전달한 isOwner가 true일 때만 버튼 표시
+        -->
+        <th:block sec:authorize="isAuthenticated()" th:if="${isOwner}">
+            <button type="button" th:onclick="|location.href='@{/board/update/{no}(no=*{no})}'|">수정</button>
+            <button type="button" th:onclick="|deleteBoard(*{no})|">삭제</button>
+        </th:block>
+    </div>
+</div>
+
+<script>
+    async function deleteBoard(boardNo) {
+        if (!confirm("정말로 삭제하시겠습니까?")) {
+            return;
+        }
+
+        const url = `/BuyBike/board/delete/` + boardNo;
+        try {
+            const response = await fetch(url, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                const result = await response.text();
+                if (result === 'SUCCESS') {
+                    alert('게시글이 삭제되었습니다.');
+                    location.href = '/board/list';
+                } else {
+                    alert('삭제에 실패했습니다: ' + result);
+                }
+            } else {
+                alert('삭제 요청에 실패했습니다. 상태: ' + response.status);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('삭제 중 오류가 발생했습니다.');
+        }
+    }
+</script>
+
 </body>
 </html>
+
+<!--<html-->
+<!--        xmlns:th="http://www.thymeleaf.org"-->
+<!--        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>게시글 조회</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>게시글 조회</h1>-->
+
+<!--    <table style="width: 80%; height: 500px; border: 1px solid black;">-->
+<!--        <tr>-->
+<!--            <td>제목</td>-->
+<!--            <td>-->
+<!--                <span th:field="*{title}"> </span>-->
+<!--                &lt;!&ndash; <input type="text" id="title" name="title" th:value="*{title}"> &ndash;&gt;-->
+<!--            </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--            <td>작성자</td>-->
+<!--            <td>-->
+<!--                <span  th:field="*{memberId}"> </span>-->
+<!--            </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--            <td>내용</td>-->
+<!--            <td> &lt;!&ndash; HTML태그를 그대로 출력하기 위해 th:utext 사용 &ndash;&gt;-->
+<!--                <div th:utext="*{content}" style="width: 100%; height: 500px;"></div>-->
+<!--            </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--            <td colspan="2" align="right">-->
+<!--                <button type="button" onclick="location.href='/BuyBike/board/list'">목록</button>-->
+<!--                <button type="button"-->
+<!--                        th:onclick="location.href='/BuyBike/board/update/' + [[${board.no}]]">수정</button>-->
+<!--            </td>-->
+<!--        </tr>-->
+
+<!--    </table>-->
+
+
+<!--</body>-->
+<!--</html>-->

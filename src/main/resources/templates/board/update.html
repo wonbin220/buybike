@@ -1,11 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>게시글 수정</title>
 </head>
 <body>
+    <div class="container">
+        <th:block th:replace="~{module/header}"></th:block>
+    </div>
+
     <h1>게시글 수정</h1>
 
     <form id="form" th:action="@{/board/update}" method="post" th:object="${board}"
@@ -22,19 +27,19 @@
             <tr>
                 <td>작성자</td>
                 <td>
-                    <input type="text" th:field="*{memberId}">
+                    <div name="memberId" sec:authentication="principal.username" th:value="${#authentication.name}" readonly></div>
                 </td>
             </tr>
             <tr>
                 <td>내용</td>
                 <td>
-                    <textarea th:field="*{content}"  rows="10" cols="100"></textarea>
+                    <textarea th:field="*{content}"  id="content" name="content" ></textarea>
                 </td>
             </tr>
             <tr>
                 <td colspan="2" align="right">
                     <button type="button" onclick="location.href='/BuyBike/board/list'">목록</button>
-                    <button type="submit">수정</button>
+                    <button type="submit" onclick="submitContents(this)">수정</button>
                     <button type="button" onclick="remove()">삭제</button>
                 </td>
             </tr>
@@ -58,10 +63,9 @@
             sSkinURI: /*[[@{/smarteditor2/SmartEditor2Skin.html}]]*/,
             htParams : {
                 bUseToolbar : true,
-                fOnBeforeUnload : function(){
-                    // 경고 메시지 표시
-                    // alert("아싸!");
-                }
+                bUseVerticalResizer : true,
+                bUseModeChanger : true,
+                fOnBeforeUnload : function(){}
             },
             // iframe 로드 완료 후 실행될 콜백 함수 지정
             fOnAppLoad : function(){
@@ -72,19 +76,15 @@
         });
 
 
-        // 에디터 내용을 textarea에 업데이트하는 함수
-        function updateEditorContent() {
-            if(oEditors.length > 0) {
-                oEditors.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+        function submitContents(elClickedObj) {
+            // 에디터의 내용이 textarea에 적용된다.
+            oEditors.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+            try {
+                elClickedObj.form.submit();
+            } catch (e) {
             }
         }
 
-        // form 제출 시 호출될 함수
-        function submitContents() {
-            updateEditorContent();
-            // form 제출을 계속 진행하기 위해 true 반환
-            return true;
-        }
 
 
         const $form = document.getElementById('form')
@@ -99,13 +99,20 @@
         }
 
         async function updateData() {
-            const data = {
-                "no"    : document.getElementById("no").value,
-                "title" : document.getElementById("title").value,
-                "memberId" : document.getElementById("memberId").value,
-                "content" : document.getElementById("content").value,
+            // 1. 스마트에디터의 내용을 <textarea>에 반영합니다.
+            if(oEditors.length > 0) {
+                oEditors.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
             }
-            const url = `/board`
+
+            // 2. 폼 데이터를 가져옵니다.
+            const data = {
+                "no"    : document.querySelector('input[name="no"]').value,
+                "title" : document.querySelector('input[name="title"]').value,
+                "memberId" : document.querySelector('input[name="memberId"]').value,
+                "content" : document.getElementById("content").value,
+            };
+
+            const url = `/board`;
             try {
                 const response = await fetch(url, {
                     method : "PUT",
@@ -113,20 +120,27 @@
                         "Content-Type" : "application/json"
                     },
                     body : JSON.stringify(data)
-                })
+                });
+
                 if( !response.ok ) {
-                    alert("데이터 수정 실패")
-                    return
+                    alert("데이터 수정 실패");
+                    return;
                 }
-                const result = await response.text()
-                alert(result)
-                alert(`데이터 수정 성공`)
-                location.href = `/board/list`
+
+                const result = await response.text();
+                if (result === 'SUCCESS') {
+                    alert(`데이터 수정 성공`);
+                    location.href = `/board/list`;
+                } else {
+                    alert('데이터 수정 실패: ' + result);
+                }
+
             } catch (error) {
-                console.error(error)
-                alert(`데이터 수정 실패`)
+                console.error(error);
+                alert(`데이터 수정 실패`);
             }
         }
+
 
         async function deleteData() {
             const url = `/board/${no}`

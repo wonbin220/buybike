@@ -2,11 +2,15 @@ package com.buybike.app.domain;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.NotBlank;
 
-@Getter @Setter
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString
 public class MemberFormDto {
 
     @NotBlank(message = "아이디는 필수 입력 값입니다.")
@@ -22,4 +26,9 @@ public class MemberFormDto {
     private String email;
     @NotBlank(message = "주소는 필수 입력 값입니다.")
     private String address;
+
+    public MemberFormDto(String memberId, String memberName) {
+        this.memberId = memberId;
+        this.memberName = memberName;
+    }
 }

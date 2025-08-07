@@ -34,6 +34,7 @@
     <select id="list" resultType="com.buybike.app.domain.Board">
         SELECT *
         FROM board
+        ORDER BY no DESC
     </select>
 
     <!-- 페이징 목록 -->
@@ -48,12 +49,13 @@
         SELECT *
         FROM board
         WHERE no = #{no}
+        ORDER BY no DESC
     </select>
 
     <!-- 등록 -->
     <insert id="insert">
-        INSERT INTO board ( id, title, memberId, content )
-        VALUES ( #{id}, #{title}, #{memberId}, #{content} )
+        INSERT INTO board ( title, memberId, content )
+        VALUES ( #{title}, #{memberId}, #{content} )
     </insert>
 
     <!-- 수정 -->

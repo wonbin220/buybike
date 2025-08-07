@@ -1,26 +1,22 @@
 package com.buybike.app.controller;
 
-import com.buybike.app.domain.Board;
-import com.buybike.app.domain.BoardFormDto;
-import com.buybike.app.domain.Member;
-import com.buybike.app.domain.Pagination;
+import com.buybike.app.domain.*;
 import com.buybike.app.service.BoardService;
 import com.github.pagehelper.PageInfo;
-import jakarta.servlet.http.HttpServletRequest;
+
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -137,14 +133,49 @@ public class BoardController {
     }
 
     // 게시글 조회 화면
+//    @GetMapping("/view/{no}")
+//    public String view(@PathVariable("no") Integer no, Model model) throws Exception {
+//        // 데이터 요청
+//        Board board = boardService.select(no);
+//        // 모델 등록
+//        model.addAttribute("board", board);
+//        return "board/view";
+//    }
     @GetMapping("/view/{no}")
-    public String view(@PathVariable("no") Integer no, Model model) throws Exception {
-        // 데이터 요청
+    public String view(@PathVariable("no") int no, Model model) throws Exception {
         Board board = boardService.select(no);
-        // 모델 등록
         model.addAttribute("board", board);
+
+        // 현재 로그인한 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = null;
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            currentUsername = userDetails.getUsername();
+        } else if (authentication != null) {
+            // UserDetails가 아닌 다른 Principal 타입일 경우 (예: String)
+            currentUsername = authentication.getName();
+        }
+
+        // 현재 사용자가 작성자인지 여부를 boolean 값으로 모델에 추가
+        boolean isOwner = board.getMemberId() != null && board.getMemberId().equals(currentUsername);
+        model.addAttribute("isOwner", isOwner);
+
+
+
+        // --- 디버깅 로그 추가 ---
+        log.info("--- 권한 확인 디버깅 ---");
+        log.info("게시글 번호: {}", board.getNo());
+        log.info("게시글 작성자 ID (board.getMemberId): {}", board.getMemberId());
+        log.info("현재 로그인 사용자 ID (currentUsername): {}", currentUsername);
+        log.info("authentication: {}", authentication);
+        log.info("작성자 여부 (isOwner): {}", isOwner);
+        log.info("----------------------");
+
         return "board/view";
     }
+
 
     // 게시글 등록
     @GetMapping("/create")
@@ -155,17 +186,17 @@ public class BoardController {
     @PostMapping(path="/create")
     public String createPostForm(BoardFormDto boardFormDto, HttpSession session) throws Exception {
         // 1. 세션에서 로그인한 회원 정보 가져오기
-        Member loginMember = (Member) session.getAttribute("loginMember");
+        MemberFormDto loginInfo = (MemberFormDto) session.getAttribute("userLoginInfo");
 
         // 로그인하지 않은 경우, 로그인 페이지로 리다이렉트
-        if (loginMember == null) {
-            return "redirect:/member/login";
+        if (loginInfo == null) {
+            return "redirect:/login";
         }
 
         // 2. DTO를 Entity로 변환하고 작성자 정보 설정
         Board board = boardFormDto.toEntity();
-        board.setId(loginMember.getMemberId()); // Member 객체의 ID 필드명에 맞게 수정하세요.
-        board.setMemberId(loginMember.getMemberName());  // Member 객체의 이름 필드명에 맞게 수정하세요.
+
+        board.setMemberId(loginInfo.getMemberId());  // Member 객체의 이름 필드명에 맞게 수정하세요.
 
         // 3. 서비스 계층에 데이터 저장 요청
         boolean result = boardService.insert(board);
@@ -188,27 +219,23 @@ public class BoardController {
         return "board/update";
     }
 
+     @PostMapping("/update")
+     public String updatePostForm(@Valid BoardFormDto boardFormDto, BindingResult bindingResult) throws Exception {
+         if (bindingResult.hasErrors()) {
+             // 유효성 검사 실패 시, 다시 수정 폼으로 돌아감
+             return "board/update";
+         }
+         // 데이터 요청
+         boolean result = boardService.update(boardFormDto);
 
+         // 데이터 처리 성공
+         if (result) {
+             return "redirect:/board/list";
+         }
 
-    @PostMapping("/update")
-    public String updatePostForm(@Valid BoardFormDto boardFormDto, BindingResult bindingResult) throws Exception {
-        if (bindingResult.hasErrors()) {
-            // 유효성 검사 실패 시, 다시 수정 폼으로 돌아감
-            return "board/update";
-        }
-
-        // 데이터 요청
-        boolean result = boardService.update(boardFormDto);
-
-        // 데이터 처리 성공
-        if (result) {
-            return "redirect:/board/list";
-        }
-
-        // 데이터 처리 실패 시, 게시글 번호를 포함하여 리다이렉트
-        return "redirect:/board/update/" + boardFormDto.getId() + "?error=true";
-    }
-
+         // 데이터 처리 실패 시, 게시글 번호를 포함하여 리다이렉트
+         return "redirect:/board/update/" + boardFormDto.getId() + "?error=true";
+     }
 
     // 게시글 삭제
     @PostMapping("/delete/{no}")
@@ -220,7 +247,7 @@ public class BoardController {
         if (result)
             return "redirect:/board/list";
         // 데이터 처리 실패
-        return "rediredct:/board/view/" + no + "?error=true";
+        return "redirect:/board/view/" + no + "?error=true";
     }
 }
 

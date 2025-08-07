@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @ToString
-public class BoardFormDto  {
+public class BoardFormDto {
     private Long no;
     private String id; // 게시글 ID
     private String title;
@@ -22,14 +22,15 @@ public class BoardFormDto  {
     private LocalDateTime updatedAT;
     private String fileName; // 업로드된 파일 이름
     private MultipartFile boardImage; // 게시판 이미지 URL
+
     public Board toEntity() {
         Board build = Board.builder()
                 .no(no)
                 .id(id)
                 .title(title)
                 .content(content)
-                .memberId(memberId) // Member 객체로 설정
-                .Hits(hits)
+                .memberId(memberId)
+                .hits(hits)
                 .createdAt(createdAt != null ? createdAt : LocalDateTime.now()) // 현재 시간으로 설정
                 .fileName(fileName)
                 .boardImage(boardImage)
@@ -37,7 +38,7 @@ public class BoardFormDto  {
         return build;
     }
 
-    public BoardFormDto(Long no, String id, String title, String content, String memberId,  LocalDateTime createdAt) {
+    public BoardFormDto(Long no, String id, String title, String content, String memberId, LocalDateTime createdAt) {
         this.no = no;
         this.id = id;
         this.title = title;
@@ -46,5 +47,7 @@ public class BoardFormDto  {
         this.createdAt = createdAt != null ? createdAt : LocalDateTime.now(); // 현재 시간으로 설정
     }
 }
+
+
 
 

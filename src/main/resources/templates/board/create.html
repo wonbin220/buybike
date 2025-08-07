@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,10 @@
 </head>
 <body>
 <h1>게시글 등록</h1>
+<div class="container">
+    <th:block th:replace="~{module/header}"></th:block>
+</div>
+
 <form th:action="@{/board/create}" method="post" th:object="${boardFormDto}"  onsubmit="return submitContents();" enctype="multipart/form-data" >
     <table style="width: 80%; height: 500px; border: 1px solid black;">
         <tr>
@@ -18,13 +23,14 @@
         <tr>
             <td>작성자</td>
             <td>
-                <input type="text" name="memberId" th:field="*{memberId}">
+<!--                <input type="text" name="memberId" th:field="*{memberId}">-->
+                <div name="memberId" sec:authentication="principal.username" th:value="${#authentication.name}" readonly></div>
             </td>
         </tr>
         <tr>
             <td>내용</td>
             <td>
-                <textarea th:field="*{content}"  rows="10" cols="100"></textarea>
+                <textarea  id="content" name="content"  th:field="*{content}" ></textarea>
             </td>
         </tr>
         <tr>
@@ -49,6 +55,12 @@
         oAppRef: oEditors,
         elPlaceHolder: "content",
         sSkinURI: /*[[@{/smarteditor2/SmartEditor2Skin.html}]]*/,
+        htParams : {
+            bUseToolbar : true,
+            bUseVerticalResizer : true,
+            bUseModeChanger : true,
+            fOnBeforeUnload : function(){}
+        },
         fOnAppLoad : function(){
             // sUrl에 컨트롤러의 @RequestMapping 경로를 정확히 기입합니다.
             oEditors.getById["content"].getIR();
@@ -64,19 +76,36 @@
     });
 
 
-    // 에디터 내용을 textarea에 업데이트하는 함수
+    // form 제출 시 에디터 내용을 textarea에 반영
+    function submitContents() {
+        if(oEditors.length > 0) {
+            oEditors.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+        }
+        return true;
+    }
+
+    // AJAX 호출 시 에디터 내용을 textarea에 반영
     function updateEditorContent() {
         if(oEditors.length > 0) {
             oEditors.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
         }
     }
 
-    // form 제출 시 호출될 함수
-    function submitContents() {
-        updateEditorContent();
-        // form 제출을 계속 진행하기 위해 true 반환
-        return true;
-    }
+
+    //
+    // // 에디터 내용을 textarea에 업데이트하는 함수
+    // function updateEditorContent() {
+    //     if(oEditors.length > 0) {
+    //         oEditors.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+    //     }
+    // }
+    //
+    // // form 제출 시 호출될 함수
+    // function submitContents() {
+    //     updateEditorContent();
+    //     // form 제출을 계속 진행하기 위해 true 반환
+    //     return true;
+    // }
 
         /*
         AJAX
