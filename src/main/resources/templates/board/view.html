@@ -13,6 +13,17 @@
         .content-div { min-height: 400px; }
         .button-group { text-align: right; margin-top: 10px; }
         .button-group button { padding: 5px 10px; cursor: pointer; }
+
+        .comment-container { margin-top: 20px; }
+        .comment-form { margin-bottom: 20px; border: 1px solid #ccc; padding: 10px; }
+        .comment-form textarea { width: 100%; min-height: 60px; margin-bottom: 5px; }
+        .comment-options { text-align: right; }
+        .comment-item { border-top: 1px solid #eee; padding: 10px 0; }
+        .comment-header { font-size: 0.9em; color: #555; margin-bottom: 5px; }
+        .comment-date { margin-left: 10px; color: #999; }
+        .comment-content { margin-bottom: 5px; }
+        .comment-actions button { font-size: 0.8em; padding: 2px 5px; }
+        .comment-children { margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -46,6 +57,31 @@
         </tbody>
     </table>
 
+
+    <!-- 댓글 영역 시작 -->
+    <div class="comment-container">
+        <h4>댓글</h4>
+
+        <!-- 댓글 작성 폼 -->
+        <div class="comment-form">
+            <input type="hidden" id="comment-parent-no" value="">
+            <textarea id="comment-content" placeholder="댓글을 입력하세요"></textarea>
+            <div class="comment-options">
+                <label><input type="checkbox" id="comment-secret"> 비밀댓글</label>
+                <button onclick="submitComment()">등록</button>
+                <button onclick="cancelReply()" id="cancel-reply-btn" style="display:none;">취소</button>
+            </div>
+        </div>
+
+        <!-- 댓글 목록 -->
+        <div id="comment-list">
+            <!-- 댓글이 여기에 동적으로 추가됩니다. -->
+        </div>
+    </div>
+    <!-- 댓글 영역 끝 -->
+
+
+
     <div class="button-group">
         <!--/* 타임리프의 URL 표현식 @{...}을 사용하여 링크 생성 */-->
         <button type="button" th:onclick="|location.href='@{/board/list}'|">목록</button>
@@ -59,8 +95,188 @@
     </div>
 </div>
 
-<script>
-    async function deleteBoard(boardNo) {
+<script th:inline="javascript">
+
+    const boardNo = /*[[${board.no}]]*/ null;
+    const currentUsername = /*[[${#authentication.name}]]*/ null;
+
+    // 페이지 로드 시 댓글 목록 불러오기
+    document.addEventListener('DOMContentLoaded', () => {
+        loadComments();
+    });
+
+    // 댓글 목록 로드 함수
+    async function loadComments() {
+        try {
+            const response = await fetch(`/api/comments?boardNo=${boardNo}`);
+            if (!response.ok) throw new Error('댓글을 불러오는데 실패했습니다.');
+
+            const comments = await response.json();
+            const commentListEl = document.getElementById('comment-list');
+            commentListEl.innerHTML = ''; // 기존 목록 초기화
+
+            // 계층 구조를 표현하기 위해 Map 사용
+            const commentMap = new Map();
+            comments.forEach(c => {
+                c.children = [];
+                commentMap.set(c.commentNo, c);
+            });
+
+            const rootComments = [];
+            comments.forEach(c => {
+                if (c.parentNo) {
+                    const parent = commentMap.get(c.parentNo);
+                    if (parent) parent.children.push(c);
+                } else {
+                    rootComments.push(c);
+                }
+            });
+
+            rootComments.forEach(comment => {
+                const commentEl = createCommentElement(comment);
+                commentListEl.appendChild(commentEl);
+            });
+
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
+        }
+    }
+
+    // 댓글 HTML 요소 생성 함수 (재귀 호출)
+    function createCommentElement(comment) {
+        const div = document.createElement('div');
+        div.className = 'comment-item';
+        div.style.marginLeft = `${(comment.depth - 1) * 20}px`; // 깊이에 따라 들여쓰기
+        div.dataset.commentNo = comment.commentNo;
+
+        let buttons = '';
+        // 본인 댓글일 경우 삭제 버튼 추가
+        if (!comment.isDeleted && currentUsername === comment.writerId) {
+            buttons = `<button class="delete-btn" onclick="deleteComment(${comment.commentNo})">삭제</button>`;
+        }
+        // 삭제되지 않은 댓글에만 답글 버튼 추가
+        if (!comment.isDeleted) {
+            buttons += ` <button class="reply-btn" onclick="showReplyForm(${comment.commentNo})">답글</button>`;
+        }
+
+
+        div.innerHTML = `
+            <div class="comment-header">
+                <strong>${comment.writerId}</strong>
+                <span class="comment-date">${new Date(comment.createdAt).toLocaleString()}</span>
+            </div>
+            <div class="comment-content">${comment.displayContent}</div>
+            <div class="comment-actions">
+                ${buttons}
+            </div>
+        `;
+
+        // 자식 댓글이 있으면 재귀적으로 추가
+        if (comment.children && comment.children.length > 0) {
+            const childrenContainer = document.createElement('div');
+            childrenContainer.className = 'comment-children';
+            comment.children.forEach(child => {
+                childrenContainer.appendChild(createCommentElement(child));
+            });
+            div.appendChild(childrenContainer);
+        }
+
+        return div;
+    }
+
+    // 답글 폼 보여주기
+    function showReplyForm(parentNo) {
+        const commentForm = document.querySelector('.comment-form');
+        const targetComment = document.querySelector(`.comment-item[data-comment-no='${parentNo}']`);
+
+        // 폼을 해당 댓글 아래로 이동
+        targetComment.appendChild(commentForm);
+
+        document.getElementById('comment-parent-no').value = parentNo;
+        document.getElementById('comment-content').focus();
+        document.getElementById('cancel-reply-btn').style.display = 'inline';
+    }
+
+    // 답글 작성 취소
+    function cancelReply() {
+        const commentForm = document.querySelector('.comment-form');
+        const container = document.querySelector('.comment-container');
+        container.insertBefore(commentForm, document.getElementById('comment-list')); // 폼을 원래 위치로
+
+        document.getElementById('comment-parent-no').value = '';
+        document.getElementById('comment-content').value = '';
+        document.getElementById('cancel-reply-btn').style.display = 'none';
+    }
+
+
+    // 댓글 등록 함수
+    async function submitComment() {
+        const content = document.getElementById('comment-content').value;
+        const isSecret = document.getElementById('comment-secret').checked;
+        const parentNo = document.getElementById('comment-parent-no').value;
+
+        if (!content.trim()) {
+            alert('댓글 내용을 입력하세요.');
+            return;
+        }
+
+        const commentData = {
+            boardNo: boardNo,
+            content: content,
+            isSecret: isSecret,
+            parentNo: parentNo ? Number(parentNo) : null
+        };
+
+        try {
+            const response = await fetch('/api/comments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(commentData)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || '댓글 등록에 실패했습니다.');
+            }
+
+            alert('댓글이 등록되었습니다.');
+            document.getElementById('comment-content').value = '';
+            document.getElementById('comment-secret').checked = false;
+            cancelReply(); // 폼 위치 초기화
+            loadComments(); // 목록 새로고침
+
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
+        }
+    }
+
+    // 댓글 삭제 함수
+    async function deleteComment(commentNo) {
+        if (!confirm('정말로 이 댓글을 삭제하시겠습니까?')) return;
+
+        try {
+            const response = await fetch(`/api/comments/${commentNo}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || '댓글 삭제에 실패했습니다.');
+            }
+
+            alert('댓글이 삭제되었습니다.');
+            loadComments(); // 목록 새로고침
+
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
+        }
+    }
+
+
+async function deleteBoard(boardNo) {
         if (!confirm("정말로 삭제하시겠습니까?")) {
             return;
         }
@@ -91,48 +307,3 @@
 
 </body>
 </html>
-
-<!--<html-->
-<!--        xmlns:th="http://www.thymeleaf.org"-->
-<!--        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-<!--    <title>게시글 조회</title>-->
-<!--</head>-->
-<!--<body>-->
-<!--<h1>게시글 조회</h1>-->
-
-<!--    <table style="width: 80%; height: 500px; border: 1px solid black;">-->
-<!--        <tr>-->
-<!--            <td>제목</td>-->
-<!--            <td>-->
-<!--                <span th:field="*{title}"> </span>-->
-<!--                &lt;!&ndash; <input type="text" id="title" name="title" th:value="*{title}"> &ndash;&gt;-->
-<!--            </td>-->
-<!--        </tr>-->
-<!--        <tr>-->
-<!--            <td>작성자</td>-->
-<!--            <td>-->
-<!--                <span  th:field="*{memberId}"> </span>-->
-<!--            </td>-->
-<!--        </tr>-->
-<!--        <tr>-->
-<!--            <td>내용</td>-->
-<!--            <td> &lt;!&ndash; HTML태그를 그대로 출력하기 위해 th:utext 사용 &ndash;&gt;-->
-<!--                <div th:utext="*{content}" style="width: 100%; height: 500px;"></div>-->
-<!--            </td>-->
-<!--        </tr>-->
-<!--        <tr>-->
-<!--            <td colspan="2" align="right">-->
-<!--                <button type="button" onclick="location.href='/BuyBike/board/list'">목록</button>-->
-<!--                <button type="button"-->
-<!--                        th:onclick="location.href='/BuyBike/board/update/' + [[${board.no}]]">수정</button>-->
-<!--            </td>-->
-<!--        </tr>-->
-
-<!--    </table>-->
-
-
-<!--</body>-->
-<!--</html>-->

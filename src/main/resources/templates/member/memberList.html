@@ -24,8 +24,8 @@
 
         <div>
             <select class="form-select" aria-label="Default select example"
-                    th:field="${memberPageInfo.size}"
-                    onchange="location.href = '/BuyBike/member/list?page=1&size=' + this.value">
+                    th:field="${pageInfo.size}"
+                    th:onchange="|location.href='@{/board/list(page=${pageInfo.pageNum})}&size=' + this.value|">
                 <option value="5" >5 개씩 보기</option>
                 <option value="10" >10 개씩 보기</option>
                 <option value="30" >30 개씩 보기</option>

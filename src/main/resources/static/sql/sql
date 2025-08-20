@@ -46,4 +46,17 @@ FROM
     ) AS numbers
 ;
 
-SELECT * FROM board;
+CREATE TABLE comment (
+    comment_no BIGINT AUTO_INCREMENT PRIMARY KEY,      -- 댓글 번호 (PK)
+    board_no   BIGINT NOT NULL,                         -- 게시글 번호 (FK)
+    parent_no  BIGINT,                                  -- 부모 댓글 번호 (계층 구조)
+    depth      INT NOT NULL DEFAULT 1,                  -- 댓글 깊이
+    content    TEXT NOT NULL,                           -- 내용
+    writer_id  VARCHAR(50) NOT NULL,                    -- 작성자 ID
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,          -- 삭제 여부
+    is_secret  BOOLEAN NOT NULL DEFAULT FALSE,          -- 비밀글 여부
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,     -- 생성일
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- 수정일
+    FOREIGN KEY (board_no) REFERENCES board(no) ON DELETE CASCADE,
+    FOREIGN KEY (parent_no) REFERENCES comment(comment_no) ON DELETE CASCADE
+);
