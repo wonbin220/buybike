@@ -60,3 +60,7 @@ CREATE TABLE comment (
     FOREIGN KEY (board_no) REFERENCES board(no) ON DELETE CASCADE,
     FOREIGN KEY (parent_no) REFERENCES comment(comment_no) ON DELETE CASCADE
 );
+
+
+ALTER TABLE comments
+ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE;

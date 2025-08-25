@@ -54,8 +54,13 @@
                 <tr>
                     <td><th:block th:text="${board.no}"></th:block></td>
                     <td>
-                        <a th:href="@{/board/view/{no}(no=${board.no})}">
-                            <th:block th:text="${board.title}"></th:block>
+                        <a th:href="@{/board/{no}(no=${board.no})}">
+                            <span th:text="${board.title}">게시글 제목</span>
+                            <!-- [수정] board 객체 안의 commentCount를 사용 -->
+<!--                            <span th:if="${board.commentCount > 0}"-->
+<!--                                  th:text="'[' + ${board.commentCount} + ']'"-->
+<!--                                  class="text-primary" style="font-size: 0.9rem; margin-left: 5px;">-->
+<!--                    </span>-->
                         </a>
                     </td>
                     <td><th:block th:text="${board.memberId}"></th:block></td>

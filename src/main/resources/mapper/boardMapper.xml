@@ -52,6 +52,22 @@
         ORDER BY no DESC
     </select>
 
+    <!-- 게시글 목록 조회를 위한 select 구문 -->
+    <select id="findAll" resultType="com.buybike.app.domain.Board">
+        SELECT
+        b.no AS no,
+        b.title,
+        b.member_id AS memberId,
+        b.created_at AS createdAt,
+        b.updated_at AS updatedAt,
+        <!-- [추가] 댓글 수를 계산하는 서브쿼리 -->
+        (SELECT COUNT(*) FROM comment c WHERE c.board_no = b.no AND c.is_deleted = FALSE) AS commentCount
+        FROM
+        board b
+        ORDER BY
+        b.board_no DESC
+    </select>
+
     <!-- 등록 -->
     <insert id="insert">
         INSERT INTO board ( title, memberId, content )

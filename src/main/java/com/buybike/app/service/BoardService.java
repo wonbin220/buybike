@@ -49,7 +49,7 @@ public class BoardService {
         return boardMapper.list();
     }
 
-    public Board select(Integer no) throws Exception {
+    public Board select(Long no) throws Exception {
         return boardMapper.select(no);
     }
 
@@ -61,7 +61,7 @@ public class BoardService {
          return boardMapper.update(boardFormDto.toEntity());
      }
 
-    public boolean delete(Integer no) throws Exception {
+    public boolean delete(Long no) throws Exception {
         return boardMapper.delete(no);
     }
 

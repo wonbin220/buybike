@@ -2,10 +2,12 @@ package com.buybike.app.controller;
 
 import com.buybike.app.domain.*;
 import com.buybike.app.service.BoardService;
+import com.buybike.app.service.CommentService;
 import com.github.pagehelper.PageInfo;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,10 +23,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Slf4j
 @Controller
 @RequestMapping("/board")
+@RequiredArgsConstructor
 public class BoardController {
     @Autowired
     private BoardService boardService;
 
+    private final CommentService commentService;
 //    @GetMapping
 //    public String requestBoards(Model model) {
 //        List<Board> list = boardService.getAllBoardList();
@@ -142,9 +146,14 @@ public class BoardController {
 //        return "board/view";
 //    }
     @GetMapping("/view/{no}")
-    public String view(@PathVariable("no") int no, Model model) throws Exception {
+    public String view(@PathVariable("no") Long no, Model model) throws Exception {
         Board board = boardService.select(no);
         model.addAttribute("board", board);
+
+        // 댓글 수 조회 및 모델에 추가
+//        Long commentCount = commentService.countCommentsByBoardNo(no);
+//        model.addAttribute("commentCount", commentCount);
+//
 
         // 현재 로그인한 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -211,7 +220,7 @@ public class BoardController {
 
     // 회원 정보 수정 페이지 출력하기
     @GetMapping("/update/{no}")
-    public String update(@PathVariable("no") Integer no, Model model) throws Exception {
+    public String update(@PathVariable("no") Long no, Model model) throws Exception {
         // 데이터 요청
         Board board = boardService.select(no);
         // 모델 등록
@@ -238,16 +247,25 @@ public class BoardController {
      }
 
     // 게시글 삭제
-    @PostMapping("/delete/{no}")
-    public String boardDelete(@PathVariable("no") Integer no) throws Exception {
-        // 데이터 요청
-        boolean result = boardService.delete(no);
-        // 리다이렉트
-        // 데이터 처리 성공
-        if (result)
-            return "redirect:/board/list";
-        // 데이터 처리 실패
-        return "redirect:/board/view/" + no + "?error=true";
+    @DeleteMapping("/delete/{no}")
+    @ResponseBody
+    public String boardDelete(@PathVariable("no") Long no) throws Exception {
+//        // 데이터 요청
+//        boolean result = boardService.delete(no);
+//        // 리다이렉트
+//        // 데이터 처리 성공
+//        if (result)
+//            return "redirect:/board/list";
+//        // 데이터 처리 실패
+//        return "redirect:/board/view/" + no + "?error=true";
+
+        try {
+            boardService.delete(no);
+            return "SUCCESS";
+        } catch (Exception e) {
+            // 실제로는 로깅을 하는 것이 좋습니다.
+            return "FAIL: " + e.getMessage();
+        }
     }
 }
 

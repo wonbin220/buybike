@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>게시글 조회</title>
+    <!-- [추가] CSRF 토큰을 위한 메타 태그 -->
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <style>
         table { width: 80%; border-collapse: collapse; }
         th, td { border: 1px solid #ccc; padding: 10px; }
@@ -97,6 +100,7 @@
 
 <script th:inline="javascript">
 
+    const contextPath = /*[[@{/}]]*/ '/';
     const boardNo = /*[[${board.no}]]*/ null;
     const currentUsername = /*[[${#authentication.name}]]*/ null;
 
@@ -108,8 +112,18 @@
     // 댓글 목록 로드 함수
     async function loadComments() {
         try {
-            const response = await fetch(`/api/comments?boardNo=${boardNo}`);
-            if (!response.ok) throw new Error('댓글을 불러오는데 실패했습니다.');
+            const response = await fetch(`${contextPath}api/comments?boardNo=${boardNo}`);
+
+            if (response.status === 404) {
+                console.log('이 게시글에는 댓글이 없습니다.');
+                document.getElementById('comment-list').innerHTML = ''; // 댓글 목록을 비웁니다.
+                return; // 함수 실행 중단
+            }
+
+            // 404가 아닌 다른 오류일 경우에만 실패 알림을 띄웁니다.
+            if (!response.ok) {
+                throw new Error(`댓글을 불러오는데 실패했습니다. (상태: ${response.status})`);
+            }
 
             const comments = await response.json();
             const commentListEl = document.getElementById('comment-list');
@@ -151,9 +165,10 @@
         div.dataset.commentNo = comment.commentNo;
 
         let buttons = '';
-        // 본인 댓글일 경우 삭제 버튼 추가
+        // 본인 댓글일 경우 삭제, 수정 버튼 추가
         if (!comment.isDeleted && currentUsername === comment.writerId) {
-            buttons = `<button class="delete-btn" onclick="deleteComment(${comment.commentNo})">삭제</button>`;
+            buttons = `<button class="edit-btn" onclick="showEditForm(${comment.commentNo}, '${comment.isSecret}')">수정</button>
+                       <button class="delete-btn" onclick="deleteComment(${comment.commentNo})">삭제</button>`;
         }
         // 삭제되지 않은 댓글에만 답글 버튼 추가
         if (!comment.isDeleted) {
@@ -198,6 +213,92 @@
         document.getElementById('cancel-reply-btn').style.display = 'inline';
     }
 
+    // [추가] 댓글 수정 폼 보여주기
+    function showEditForm(commentNo, isSecret) {
+        const commentItem = document.querySelector(`.comment-item[data-comment-no='${commentNo}']`);
+        const contentDiv = commentItem.querySelector('.comment-content');
+        const actionsDiv = commentItem.querySelector('.comment-actions');
+
+        // 이미 수정 중인 다른 댓글이 있다면 취소
+        const existingEditForm = document.querySelector('.comment-edit-form');
+        if (existingEditForm) {
+            const otherCommentNo = existingEditForm.closest('.comment-item').dataset.commentNo;
+            cancelEdit(otherCommentNo);
+        }
+
+        const originalContent = contentDiv.innerText;
+        contentDiv.style.display = 'none';
+        actionsDiv.style.display = 'none';
+
+        const editForm = document.createElement('div');
+        editForm.className = 'comment-edit-form';
+        const secretChecked = isSecret === 'true' ? 'checked' : '';
+        editForm.innerHTML = `
+            <textarea class="edit-textarea" style="width: 100%; min-height: 60px;">${originalContent}</textarea>
+            <div class="edit-actions" style="text-align: right; margin-top: 5px;">
+                <label><input type="checkbox" class="edit-secret" ${secretChecked}> 비밀댓글</label>
+                <button onclick="submitEdit(${commentNo})">저장</button>
+                <button onclick="cancelEdit(${commentNo})">취소</button>
+            </div>
+        `;
+        commentItem.appendChild(editForm);
+        editForm.querySelector('.edit-textarea').focus();
+    }
+
+    // [추가] 댓글 수정 취소
+    function cancelEdit(commentNo) {
+        const commentItem = document.querySelector(`.comment-item[data-comment-no='${commentNo}']`);
+        const editForm = commentItem.querySelector('.comment-edit-form');
+        if (editForm) {
+            commentItem.removeChild(editForm);
+        }
+        commentItem.querySelector('.comment-content').style.display = 'block';
+        commentItem.querySelector('.comment-actions').style.display = 'block';
+    }
+
+    // [추가] 댓글 수정 제출 함수
+    async function submitEdit(commentNo) {
+        const commentItem = document.querySelector(`.comment-item[data-comment-no='${commentNo}']`);
+        const content = commentItem.querySelector('.edit-textarea').value;
+        const isSecret = commentItem.querySelector('.edit-secret').checked;
+
+        if (!content.trim()) {
+            alert('댓글 내용을 입력하세요.');
+            return;
+        }
+
+        const commentData = {
+            commentNo: commentNo,
+            content: content,
+            isSecret: isSecret
+        };
+
+        const token = document.querySelector("meta[name='_csrf']").getAttribute("content");
+        const header = document.querySelector("meta[name='_csrf_header']").getAttribute("content");
+
+        try {
+            const response = await fetch(`${contextPath}api/comments/${commentNo}`, {
+                method: 'PUT', // 수정을 나타내는 HTTP 메소드
+                headers: {
+                    'Content-Type': 'application/json',
+                    [header]: token
+                },
+                body: JSON.stringify(commentData)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || '댓글 수정에 실패했습니다.');
+            }
+
+            alert('댓글이 수정되었습니다.');
+            loadComments(); // 댓글 목록을 다시 로드하여 변경사항 반영
+
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
+        }
+    }
     // 답글 작성 취소
     function cancelReply() {
         const commentForm = document.querySelector('.comment-form');
@@ -228,10 +329,18 @@
             parentNo: parentNo ? Number(parentNo) : null
         };
 
+        // [수정] CSRF 토큰 정보를 가져옵니다.
+        const token = document.querySelector("meta[name='_csrf']").getAttribute("content");
+        const header = document.querySelector("meta[name='_csrf_header']").getAttribute("content");
+
         try {
-            const response = await fetch('/api/comments', {
+            const response = await fetch(`${contextPath}api/comments`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    // [수정] 요청 헤더에 CSRF 토큰을 추가합니다.
+                    [header]: token
+                },
                 body: JSON.stringify(commentData)
             });
 
@@ -243,8 +352,8 @@
             alert('댓글이 등록되었습니다.');
             document.getElementById('comment-content').value = '';
             document.getElementById('comment-secret').checked = false;
-            cancelReply(); // 폼 위치 초기화
-            loadComments(); // 목록 새로고침
+            cancelReply();
+            loadComments();
 
         } catch (error) {
             console.error(error);
@@ -256,9 +365,17 @@
     async function deleteComment(commentNo) {
         if (!confirm('정말로 이 댓글을 삭제하시겠습니까?')) return;
 
+        // [수정] CSRF 토큰 정보를 가져옵니다.
+        const token = document.querySelector("meta[name='_csrf']").getAttribute("content");
+        const header = document.querySelector("meta[name='_csrf_header']").getAttribute("content");
+
         try {
-            const response = await fetch(`/api/comments/${commentNo}`, {
-                method: 'DELETE'
+            const response = await fetch(`${contextPath}api/comments/${commentNo}`, {
+                method: 'DELETE',
+                headers: {
+                    // [수정] 요청 헤더에 CSRF 토큰을 추가합니다.
+                    [header]: token
+                }
             });
 
             if (!response.ok) {
@@ -267,7 +384,7 @@
             }
 
             alert('댓글이 삭제되었습니다.');
-            loadComments(); // 목록 새로고침
+            loadComments();
 
         } catch (error) {
             console.error(error);
@@ -276,27 +393,41 @@
     }
 
 
-async function deleteBoard(boardNo) {
+    async function deleteBoard(boardNo) {
         if (!confirm("정말로 삭제하시겠습니까?")) {
             return;
         }
 
-        const url = `/BuyBike/board/delete/` + boardNo;
+        // [수정] CSRF 토큰과 헤더 이름을 meta 태그에서 가져옵니다.
+        const token = document.querySelector("meta[name='_csrf']").getAttribute("content");
+        const header = document.querySelector("meta[name='_csrf_header']").getAttribute("content");
+
+        // [수정] 하드코딩된 경로 대신 contextPath를 사용합니다.
+        const url = `${contextPath}board/delete/${boardNo}`;
+
         try {
             const response = await fetch(url, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    // [수정] 요청 헤더에 CSRF 토큰을 추가합니다.
+                    [header]: token
+                }
             });
 
             if (response.ok) {
                 const result = await response.text();
                 if (result === 'SUCCESS') {
                     alert('게시글이 삭제되었습니다.');
-                    location.href = '/board/list';
+                    location.href = `${contextPath}board/list`; // 목록으로 이동
                 } else {
                     alert('삭제에 실패했습니다: ' + result);
                 }
             } else {
-                alert('삭제 요청에 실패했습니다. 상태: ' + response.status);
+                if (response.status === 403) {
+                    alert('삭제할 권한이 없습니다.');
+                } else {
+                    alert('삭제 요청에 실패했습니다. 상태: ' + response.status);
+                }
             }
         } catch (error) {
             console.error('Error:', error);

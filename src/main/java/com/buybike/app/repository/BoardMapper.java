@@ -37,14 +37,14 @@ public interface BoardMapper {
     // 데이터 수
     public long count() throws Exception;
     // 조회
-    public Board select(Integer no) throws Exception;
+    public Board select(Long no) throws Exception;
     // 등록
     public boolean insert(Board board) throws Exception;
     // 수정
     public boolean update(Board board) throws Exception;
 //    public int update(Board board) throws Exception;
     // 삭제
-    public boolean delete(Integer no) throws Exception;
+    public boolean delete(Long no) throws Exception;
 
 
     // 게시글 ID로 조회

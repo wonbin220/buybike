@@ -30,6 +30,8 @@ public class Board {
     private LocalDateTime updatedAt;
     private String fileName;
     private MultipartFile boardImage; // 게시판 이미지
+    private int commentCount; // 댓글 수를 저장할 필드
+
 
     public Board() {
         this.id = UUID.randomUUID().toString();
