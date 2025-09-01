@@ -121,6 +121,8 @@ public class CommentService {
     // 특정 게시글의 댓글 수를 조회하는 서비스 메소드
     @Transactional(readOnly = true)
     public Long countCommentsByBoardNo(Long boardNo) {
-        return commentMapper.countByBoardNo(boardNo);
+        // commentMapper.countByBoardNo가 Integer를 반환할 수 있으므로, longValue()로 변환
+        Number count = commentMapper.countByBoardNo(boardNo);
+        return count.longValue();
     }
 }

@@ -26,7 +26,7 @@ public interface CommentMapper {
     Comment findById(Long commentNo);
 
     // 특정 게시글의 댓글 수 조회
-    Long countByBoardNo(Long  boardNo);
+    Integer countByBoardNo(Long boardNo);
 
     // 댓글 삭제 (is_deleted 플래그 업데이트)
     Long softDelete(@Param("commentNo") Long commentNo);

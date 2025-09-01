@@ -1,6 +1,8 @@
 package com.buybike.app.config;
 
 import com.buybike.app.controller.LoginSuccessHandler;
+import com.buybike.app.service.MemberService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -20,6 +22,10 @@ import org.springframework.security.web.header.writers.frameoptions.XFrameOption
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Autowired
+    private MemberService memberService;
+
     @Bean
     protected PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -55,14 +61,14 @@ public class SecurityConfig {
                                 .requestMatchers("/", "/login", "/member/add").permitAll()
                                 .anyRequest().authenticated()
                 )
+                .userDetailsService(memberService) // ⭐️ UserDetailsService로 MemberService를 사용하도록 명시
                 .formLogin(
                         formLogin -> formLogin
                                 .loginPage("/login")                                    // 사용자 정의 로그인 페이지
                                 .loginProcessingUrl("/login")
                                 .successHandler(loginSuccessHandler)                    // 로그인 성공 핸들러 등록
-                                // .defaultSuccessUrl("/board/list", true) // 관리자 로그인 성공 후 이동 페이지
-                                // .defaultSuccessUrl("/board/list", true) // 로그인 성공 후 이동할 페이지
-                                .failureUrl("/loginfailed")          // 로그인 실패 후 이동 페이지
+                                .failureUrl("/login?error=true")          // 로그인 실패 후 이동 페이지
+//                                .failureUrl("/loginfailed")          // 로그인 실패 후 이동 페이지
                                 .usernameParameter("username")
                                 .passwordParameter("password")
                                 .permitAll()

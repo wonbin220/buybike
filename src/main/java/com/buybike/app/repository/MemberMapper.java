@@ -7,12 +7,13 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 @Repository
 public interface MemberMapper {
      List<Member> list();
-     Member findByMemberId(@Param("memberId") String memberId);
+     Optional<Member> findByMemberId(@Param("memberId") String memberId);
      Member findById(@Param("memberId") String memberId);
      List<Member> findAll();
     // 조회

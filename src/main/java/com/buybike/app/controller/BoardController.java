@@ -145,15 +145,15 @@ public class BoardController {
 //        model.addAttribute("board", board);
 //        return "board/view";
 //    }
-    @GetMapping("/view/{no}")
+    @GetMapping("/{no}")
     public String view(@PathVariable("no") Long no, Model model) throws Exception {
         Board board = boardService.select(no);
         model.addAttribute("board", board);
 
         // 댓글 수 조회 및 모델에 추가
-//        Long commentCount = commentService.countCommentsByBoardNo(no);
-//        model.addAttribute("commentCount", commentCount);
-//
+        Long commentCount = commentService.countCommentsByBoardNo(no);
+        model.addAttribute("commentCount", commentCount);
+
 
         // 현재 로그인한 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

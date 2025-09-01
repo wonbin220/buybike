@@ -31,11 +31,27 @@
 
 
     <!-- 목록 -->
+<!--    <select id="list" resultType="com.buybike.app.domain.Board">-->
+<!--        SELECT *-->
+<!--        FROM board-->
+<!--        ORDER BY no DESC-->
+<!--    </select>-->
+    <!-- boardMapper.xml -->
     <select id="list" resultType="com.buybike.app.domain.Board">
-        SELECT *
-        FROM board
-        ORDER BY no DESC
+        SELECT
+            b.no,
+            b.title,
+            b.memberId AS memberId,
+            b.created_at AS createdAt,
+            b.updated_at AS updatedAt,
+--             b.hits,
+            (SELECT COUNT(*) FROM comment c WHERE c.board_no = b.no AND c.is_deleted = FALSE) AS commentCount
+        FROM
+            board b
+        ORDER BY
+            b.no DESC
     </select>
+
 
     <!-- 페이징 목록 -->
     <select id="page" resultType="com.buybike.app.domain.Board">
@@ -55,17 +71,16 @@
     <!-- 게시글 목록 조회를 위한 select 구문 -->
     <select id="findAll" resultType="com.buybike.app.domain.Board">
         SELECT
-        b.no AS no,
+        b.no,
         b.title,
-        b.member_id AS memberId,
+        b.memberId AS memberId,
         b.created_at AS createdAt,
         b.updated_at AS updatedAt,
-        <!-- [추가] 댓글 수를 계산하는 서브쿼리 -->
         (SELECT COUNT(*) FROM comment c WHERE c.board_no = b.no AND c.is_deleted = FALSE) AS commentCount
         FROM
         board b
         ORDER BY
-        b.board_no DESC
+        b.no DESC  <!-- b.board_no -> b.no 로 수정 -->
     </select>
 
     <!-- 등록 -->
