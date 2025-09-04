@@ -92,14 +92,19 @@ public class MemberController {
     @GetMapping(value= "/update/{memberId}")
     public String requestUpdateMemberForm(@PathVariable(name = "memberId") String memberId, Model model) {
 
+//        Member member = memberService.getMemberById(memberId);
+//        model.addAttribute("memberFormDto", member);
         Member member = memberService.getMemberById(memberId);
+        // Member 객체를 MemberFormDto로 변환하거나, Member 객체 그대로 사용
+        // 여기서는 Member 객체를 그대로 사용한다고 가정
         model.addAttribute("memberFormDto", member);
+        model.addAttribute("memberId", memberId); // 삭제 링크를 위해 추가
         return "member/updateMember";
     }
 
     // 회원 정보 수정하기
     @PostMapping(value = "/update")
-    public String submitUpdateMember(@Valid MemberFormDto memberFormDto, BindingResult bindingResult, Model model) {
+    public String submitUpdateMember(@Valid MemberFormDto memberFormDto, BindingResult bindingResult, Model model, Authentication authentication) {
         if (bindingResult.hasErrors()) {
             return "member/updateMember";
         }
@@ -119,6 +124,14 @@ public class MemberController {
             if (memberFormDto.getPassword() != null && !memberFormDto.getPassword().isEmpty()) {
                 existingMember.setPassword(passwordEncoder.encode(memberFormDto.getPassword()));
             }
+
+            // ADMIN 권한을 가진 사용자만 role 변경 가능
+            if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+                if (memberFormDto.getRole() != null) {
+                    existingMember.setRole(memberFormDto.getRole());
+                }
+            }
+
             memberService.updateMember(existingMember);
         } catch (IllegalStateException e) {
             model.addAttribute("errorMessage", e.getMessage());

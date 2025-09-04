@@ -5,17 +5,12 @@ import com.buybike.app.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 
@@ -55,10 +50,17 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        authorizeRequests -> authorizeRequests
-                                // webSecurityCustomizer에서 처리하므로 여기서는 제거하거나 유지해도 됩니다.
-                                // 명확성을 위해 핵심 경로만 남깁니다.
-                                .requestMatchers("/", "/login", "/member/add").permitAll()
+                        authorize -> authorize
+                                // 모든 사용자 접근 가능
+                                .requestMatchers("/css/**", "/js/**", "/images/**", "/BuyBike/**").permitAll()
+                                .requestMatchers("/", "/member/login", "/member/add").permitAll()
+                                // ADMIN 또는 OPERATOR만 접근 가능
+                                .requestMatchers("/member/list").hasAnyRole("ADMIN", "OPERATOR")
+                                // ADMIN만 접근 가능
+                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                // 본인 정보 수정, 삭제는 USER도 가능하도록 SpEL 사용
+                                .requestMatchers("/member/update/{memberId}", "/member/delete/{memberId}").access("@memberSecurity.checkMemberId(authentication, #memberId)")
+                                // 나머지 요청은 인증된 사용자만
                                 .anyRequest().authenticated()
                 )
                 .userDetailsService(memberService) // ⭐️ UserDetailsService로 MemberService를 사용하도록 명시

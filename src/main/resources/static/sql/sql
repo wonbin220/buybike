@@ -7,7 +7,7 @@ phone varchar(100),
 email varchar(100),
 address varchar(200),
 regDt datetime default now(),
-role ENUM('ADMIN', 'USER') not null default 'USER'
+role ENUM('ADMIN','OPERATOR', 'USER') not null default 'USER'
 );
 
 

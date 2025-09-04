@@ -85,6 +85,20 @@
             <input type="text" name="address" cols="10" rows="2" class="formcontrol" th:field="*{address}"/>
         </div>
     </div>
+
+    <!-- ADMIN만 등급 변경 가능 -->
+    <div class="mb-3 row" sec:authorize="hasAuthority('ADMIN')">
+        <label class="col-sm-2 control-label">등급</label>
+        <div class="col-sm-3">
+            <select class="form-select" th:field="*{role}">
+                <option th:value="USER" th:text="USER"></option>
+                <option th:value="OPERATOR" th:text="OPERATOR"></option>
+                <option th:value="ADMIN" th:text="ADMIN"></option>
+            </select>
+        </div>
+    </div>
+
+
     <div class="mb-3 row">
         <div class="col-sm-offset-2 col-sm-10">
             <a th:href="'javascript:checkPasswd()'" class="btn btn-success">수정</a>

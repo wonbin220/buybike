@@ -1,5 +1,5 @@
 package com.buybike.app.domain;
 
 public enum Role {
-    USER, ADMIN
+    USER, ADMIN,OPERATOR
 }

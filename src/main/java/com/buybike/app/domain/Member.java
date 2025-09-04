@@ -2,6 +2,8 @@ package com.buybike.app.domain;
 
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +22,9 @@ public class Member {
     private String email;
     private String address;
     private LocalDateTime regDt;
-    private Role role; // 사용자 권한 (USER, ADMIN)
+
+    @Enumerated(EnumType.STRING)
+    private Role role; // 사용자 권한 (USER, ADMIN, OPERATOR)
 
     public static Member createMember(MemberFormDto memberFormDto, PasswordEncoder passwordEncoder) {
         Member member = new Member();
