@@ -59,7 +59,7 @@ public class SecurityConfig {
                                 // ADMIN만 접근 가능
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 // 본인 정보 수정, 삭제는 USER도 가능하도록 SpEL 사용
-                                .requestMatchers("/member/update/{memberId}", "/member/delete/{memberId}").access("@memberSecurity.checkMemberId(authentication, #memberId)")
+                                .requestMatchers("/member/update/{memberId}", "/member/delete/{memberId}").access("hasRole('ADMIN') or @memberSecurity.checkMemberId(authentication, #memberId)")
                                 // 나머지 요청은 인증된 사용자만
                                 .anyRequest().authenticated()
                 )
