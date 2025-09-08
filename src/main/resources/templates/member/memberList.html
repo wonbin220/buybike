@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>게시판 목록</title>
     <link href="/BuyBike/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CSRF 토큰을 위한 meta 태그 추가 -->
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <style>
     a {
@@ -53,33 +56,29 @@
         </th:block>
         <th:block th:each="member : ${memberPageInfo.list}">
             <tr>
-                <td><th:block th:text="${member.num}"></th:block></td>
+                <td th:text="${member.num}"></td>
                 <td>
-                    <a th:href="@{/member/update/{memberId}(memberId=${member.memberId})}">
-                        <th:block th:text="${member.memberId}"></th:block>
-                    </a>
+                    <a th:href="@{/member/update/{memberId}(memberId=${member.memberId})}" th:text="${member.memberId}"></a>
                 </td>
-                <td><th:block th:text="${member.memberName}"></th:block></td>
-                <td><th:block th:text="${member.password}"></th:block></td>
+                <td th:text="${member.memberName}"></td>
+                <td th:text="${member.password}"></td>
                 <td>
                     <!-- ADMIN 권한이 있을 경우 -->
-                    <div sec:authorize="hasAuthority('ADMIN')">
-                        <form th:action="@{/member/update}" method="post" class="d-flex">
+                    <div sec:authorize="hasRole('ADMIN')">
+                        <!-- 현재 행의 멤버가 'ADMIN'이 아닐 경우에만 수정 UI를 보여줌 -->
+                        <div class="d-flex" th:unless="${member.role.name() == 'ADMIN'}">
                             <input type="hidden" name="memberId" th:value="${member.memberId}" />
-                            <input type="hidden" name="memberName" th:value="${member.memberName}" />
-                            <input type="hidden" name="email" th:value="${member.email}" />
-                            <input type="hidden" name="phone" th:value="${member.phone}" />
-                            <input type="hidden" name="address" th:value="${member.address}" />
                             <select name="role" class="form-select form-select-sm me-2">
                                 <option value="USER" th:selected="${member.role.name() == 'USER'}">USER</option>
                                 <option value="OPERATOR" th:selected="${member.role.name() == 'OPERATOR'}">OPERATOR</option>
-                                <option value="ADMIN" th:selected="${member.role.name() == 'ADMIN'}">ADMIN</option>
                             </select>
-                            <button type="submit" class="btn btn-sm btn-outline-primary">변경</button>
-                        </form>
+                            <button type="button" class="btn btn-sm btn-outline-primary" th:onclick="|updateRole(this, '@{/member/updateRole}')|">변경</button>
+                        </div>
+                        <!-- 현재 행의 멤버가 'ADMIN'일 경우 역할을 텍스트로만 표시 -->
+                        <span th:if="${member.role.name() == 'ADMIN'}" th:text="${member.role}"></span>
                     </div>
                     <!-- ADMIN 권한이 없을 경우 -->
-                    <div sec:authorize="!hasAuthority('ADMIN')">
+                    <div sec:authorize="!hasRole('ADMIN')">
                         <span th:text="${member.role}"></span>
                     </div>
                 </td>
@@ -132,5 +131,49 @@
         </nav>
     </div>
 </div>
+
+
+<script>
+    function updateRole(button, url) {
+        const container = button.closest('div');
+        const memberId = container.querySelector('input[name="memberId"]').value;
+        const role = container.querySelector('select[name="role"]').value;
+
+        const data = {
+            memberId: memberId,
+            role: role
+        };
+
+        // CSRF 토큰 가져오기
+        const token = document.querySelector("meta[name='_csrf']").getAttribute("content");
+        const header = document.querySelector("meta[name='_csrf_header']").getAttribute("content");
+
+        fetch(url, { // 하드코딩된 URL 대신 인자로 받은 url 사용
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [header]: token // CSRF 토큰을 헤더에 추가
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                // 응답이 성공이 아니면, 응답 본문을 텍스트로 읽어 에러를 발생시킴
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text || '서버 응답이 올바르지 않습니다.') });
+                }
+                return response.text(); // 성공 응답의 본문을 텍스트로 읽음
+            })
+            .then(text => {
+                alert(text); // 성공 메시지 표시
+                location.reload(); // 성공 시 페이지 새로고침하여 변경사항 반영
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다: ' + error.message);
+            });
+    }
+</script>
+
+
 </body>
 </html>

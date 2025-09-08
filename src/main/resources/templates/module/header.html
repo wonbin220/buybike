@@ -12,7 +12,10 @@
         <ul class="nav nav-pills">
             <li class="nav-item"><a th:href="@{/board/list}" class="nav-link active" aria-current="page">게시판</a></li>
             <li class="nav-item"><a href="#" class="nav-link">Features</a></li>
-            <li class="nav-item"><a th:href="@{/member/list}" class="nav-link">회원목록</a></li>
+            <!-- ADMIN 또는 OPERATOR 역할이 있을 때만 '회원목록' 메뉴가 보이도록 설정 -->
+            <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'OPERATOR')">
+                <a class="nav-link" th:href="@{/member/list}">회원목록</a>
+            </li>
             <li class="nav-item"><a th:href="@{/member/add}" class="nav-link">회원가입</a></li>
             <li class="nav-item">
 <!--                <a sec:authorize="isAnonymous()" th:href="@{/login}" class="nav-link">로그인</a>-->

@@ -1,23 +1,18 @@
 package com.buybike.app.controller;
 
-import com.buybike.app.domain.Board;
-import com.buybike.app.domain.Member;
-import com.buybike.app.domain.MemberFormDto;
-import com.buybike.app.domain.Pagination;
+import com.buybike.app.domain.*;
 import com.buybike.app.service.MemberService;
 import com.github.pagehelper.PageInfo;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
@@ -102,7 +97,7 @@ public class MemberController {
         return "member/updateMember";
     }
 
-    // 회원 정보 수정하기
+    // 회원 정보 수정하기(Form 방식)
     @PostMapping(value = "/update")
     public String submitUpdateMember(@Valid MemberFormDto memberFormDto, BindingResult bindingResult, Model model, Authentication authentication) {
         if (bindingResult.hasErrors()) {
@@ -139,6 +134,36 @@ public class MemberController {
         }
         return "redirect:/member/list";
     }
+
+
+    /**
+     * 회원 역할 수정 (AJAX 요청 처리)
+     * @param roleUpdateDto 수정할 회원 정보 (JSON)
+     * @return 수정 결과
+     */
+    @PostMapping("/updateRole")
+    @ResponseBody
+    public ResponseEntity<?> updateMemberRole(@RequestBody RoleUpdateDto roleUpdateDto) {
+        try {
+            Member existingMember = memberService.getMemberById(roleUpdateDto.getMemberId());
+            if (existingMember == null) {
+                return ResponseEntity.badRequest().body("존재하지 않는 회원입니다.");
+            }
+            // 역할(Role)만 업데이트
+            existingMember.setRole(roleUpdateDto.getRole());
+            int result = memberService.updateMember(existingMember);
+
+            if (result > 0) {
+                return ResponseEntity.ok().body("역할이 성공적으로 변경되었습니다.");
+            } else {
+                return ResponseEntity.internalServerError().body("역할 변경에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            log.error("Error updating member role", e);
+            return ResponseEntity.internalServerError().body("오류가 발생했습니다.");
+        }
+    }
+
     // 회원 정보 삭제하기
     @GetMapping("/delete/{memberId}")
     public String deleteMember(@PathVariable(name = "memberId") String memberId) {

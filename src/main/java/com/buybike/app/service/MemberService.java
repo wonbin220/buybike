@@ -7,14 +7,15 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,6 +81,19 @@ public class MemberService implements UserDetailsService {
 //    }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        // 데이터베이스에서 사용자 정보 조회
+//        Optional<Member> member = memberMapper.findByMemberId(username); // 실제 메소드명으로 변경 필요
+//
+//        if (member.isEmpty()) {
+//            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username);
+//        }
+//
+//        // 권한 정보 생성 (ROLE_ 접두사 추가)
+//        List<GrantedAuthority> authorities = new ArrayList<>();
+//        authorities.add(new SimpleGrantedAuthority("ROLE_" + member.get().getRole())); // "ROLE_" 접두사 추가
+
+
         // username은 로그인 시 입력한 아이디에 해당합니다.
         // 여기서는 memberId를 username으로 사용한다고 가정합니다.
         Member member = memberMapper.findByMemberId(username)

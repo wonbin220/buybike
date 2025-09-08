@@ -3,10 +3,12 @@ package com.buybike.app.config;
 import com.buybike.app.domain.Member;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 @Getter
 public class CustomUserDetails implements UserDetails {
@@ -15,6 +17,10 @@ public class CustomUserDetails implements UserDetails {
 
     public CustomUserDetails(Member member) {
         this.member = member;
+    }
+
+    public Long getMemberNum() {
+        return member.getNum(); // Member 엔티티의 PK(Long) getter
     }
 
     // Thymeleaf에서 #authentication.principal.memberId 로 접근 가능
@@ -31,8 +37,9 @@ public class CustomUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // 사용자의 권한을 반환합니다. 예시로 단일 권한을 하드코딩했지만,
         // 실제로는 Member 엔티티의 권한 정보를 반환해야 합니다.
-        // return Collections.singletonList(new SimpleGrantedAuthority(member.getRole()));
-        return Collections.emptyList(); // 권한이 없다면 비어있는 리스트 반환
+//      return Collections.emptyList(); // 권한이 없다면 비어있는 리스트 반환
+        // 사용자의 권한 정보에 "ROLE_" 접두사를 붙여 반환하도록 수정
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + member.getRole()));
     }
 
     @Override
