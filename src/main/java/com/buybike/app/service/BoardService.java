@@ -75,4 +75,13 @@ public class BoardService {
         PageInfo<Board> pageInfo = new PageInfo<>(list, 10);
         return pageInfo;
     }
+
+    /**
+     * 특정 회원이 작성한 게시글 목록을 조회합니다.
+     * @param memberId 회원 아이디
+     * @return 게시글 목록
+     */
+    public List<Board> getPostsByMemberId(String memberId) throws Exception {
+        return boardMapper.getPostsByMemberId(memberId);
+    }
 }

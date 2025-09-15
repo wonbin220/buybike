@@ -40,12 +40,13 @@ public class BoardFormDto {
         return build;
     }
 
-    public BoardFormDto(Long no, String id, String title, String content, String memberId, LocalDateTime createdAt, int commentCount) {
+    public BoardFormDto(Long no, String id, String title, String content, String memberId,int hits, LocalDateTime createdAt, int commentCount) {
         this.no = no;
         this.id = id;
         this.title = title;
         this.content = content;
         this.memberId = memberId; // 게시글 작성자의 ID
+        this.hits = hits;
         this.createdAt = createdAt != null ? createdAt : LocalDateTime.now(); // 현재 시간으로 설정
         this.commentCount = commentCount;
     }

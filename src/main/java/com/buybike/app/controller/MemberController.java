@@ -1,6 +1,7 @@
 package com.buybike.app.controller;
 
 import com.buybike.app.domain.*;
+import com.buybike.app.service.BoardService;
 import com.buybike.app.service.MemberService;
 import com.github.pagehelper.PageInfo;
 import jakarta.validation.Valid;
@@ -15,6 +16,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
+
 @Slf4j
 @Controller
 @RequestMapping(value = "/member")
@@ -22,6 +25,9 @@ public class MemberController {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private BoardService boardService;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -49,6 +55,7 @@ public class MemberController {
             model.addAttribute("errorMessage", e.getMessage());
             return "member/addMember";
         }
+        // 회원 목록 페이지로 리다이렉트하도록 수정합니다.
         return "redirect:/member/list";
     }
 
@@ -70,6 +77,7 @@ public class MemberController {
 
         model.addAttribute("memberPageUri", memberPageUri);
         log.info("memberPageUri: {}", memberPageUri);
+
         return "member/memberList";
     }
 
@@ -97,6 +105,27 @@ public class MemberController {
         return "member/updateMember";
     }
 
+
+    /**
+     * 특정 회원이 작성한 게시글 목록을 반환합니다. (AJAX 요청 처리)
+     * @param memberId 회원 아이디
+     * @return 게시글 목록 (JSON)
+     */
+    @GetMapping("/posts/{memberId}")
+    @ResponseBody
+    public ResponseEntity<List<Board>> getPostsByMember(@PathVariable("memberId") String memberId) {
+        try {
+            // BoardService를 통해 memberId로 게시글 목록 조회
+            List<Board> posts = boardService.getPostsByMemberId(memberId);
+            return ResponseEntity.ok(posts);
+        } catch (Exception e) {
+            log.error("Error fetching posts for memberId: {}", memberId, e);
+            // 오류 발생 시 서버 내부 오류 응답 반환
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
     // 회원 정보 수정하기(Form 방식)
     @PostMapping(value = "/update")
     public String submitUpdateMember(@Valid MemberFormDto memberFormDto, BindingResult bindingResult, Model model, Authentication authentication) {
@@ -121,18 +150,28 @@ public class MemberController {
             }
 
             // ADMIN 권한을 가진 사용자만 role 변경 가능
-            if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+            if (isAdmin) {
                 if (memberFormDto.getRole() != null) {
                     existingMember.setRole(memberFormDto.getRole());
                 }
             }
 
             memberService.updateMember(existingMember);
+
+            // 수정 후 리다이렉트: ADMIN은 회원 목록으로, 일반 사용자는 메인 페이지로
+            if (isAdmin) {
+                return "redirect:/member/list";
+            } else {
+                return "redirect:/";
+            }
         } catch (IllegalStateException e) {
             model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("memberId", memberFormDto.getMemberId());
             return "member/updateMember";
         }
-        return "redirect:/member/list";
     }
 
 

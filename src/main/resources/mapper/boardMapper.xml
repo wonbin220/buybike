@@ -109,7 +109,19 @@
         FROM board
     </select>
 
-
+    <!-- 특정 회원이 작성한 게시글 목록 조회 -->
+    <select id="getPostsByMemberId" resultType="com.buybike.app.domain.Board">
+        SELECT
+            board_id,
+            title,
+            reg_date
+        FROM
+            board
+        WHERE
+            member_id = #{memberId}
+        ORDER BY
+            board_id DESC
+    </select>
 
 
 <!--    &lt;!&ndash; 페이징 및 정렬된 게시글 목록 조회 &ndash;&gt;-->

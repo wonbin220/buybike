@@ -46,9 +46,15 @@ public interface BoardMapper {
     // 삭제
     public boolean delete(Long no) throws Exception;
 
-
     // 게시글 ID로 조회
     public Board findById(String id) throws Exception;
+
+    /**
+     * 특정 회원이 작성한 게시글 목록을 조회합니다.
+     * @param memberId 회원 아이디
+     * @return 게시글 목록
+     */
+    List<Board> getPostsByMemberId(String memberId);
 }
 
 

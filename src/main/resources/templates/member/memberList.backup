@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>회원 목록</title>
+    <title>게시판 목록</title>
     <link href="/BuyBike/css/bootstrap.min.css" rel="stylesheet">
     <!-- CSRF 토큰을 위한 meta 태그 추가 -->
     <meta name="_csrf" th:content="${_csrf.token}"/>
@@ -13,11 +13,6 @@
 <style>
     a {
         text-decoration:none;
-    }
-    .post-link {
-        cursor: pointer;
-        color: blue;
-        text-decoration: underline;
     }
 </style>
 <body>
@@ -49,17 +44,14 @@
             <th>번호</th>
             <th>아이디</th>
             <th>작성자</th>
-            <th>이메일</th>
-            <th>가입일</th>
-            <th>게시글수</th>
-            <th>댓글수</th>
+            <th>비밀번호</th>
             <th>등급</th>
         </tr>
         </thead>
         <tbody>
         <th:block th:if="${ memberPageInfo.list == null || memberPageInfo.list.isEmpty() }">
             <tr>
-                <td colspan="8" class="text-center">조회된 데이터가 없습니다.</td>
+                <td colspan="5" class="text-center">조회된 데이터가 없습니다.</td>
             </tr>
         </th:block>
         <th:block th:each="member : ${memberPageInfo.list}">
@@ -69,15 +61,7 @@
                     <a th:href="@{/member/update/{memberId}(memberId=${member.memberId})}" th:text="${member.memberId}"></a>
                 </td>
                 <td th:text="${member.memberName}"></td>
-                <td th:text="${member.email}"></td>
-                <td th:text="${#temporals.format(member.regDate, 'yyyy-MM-dd')}"></td>
-                <td>
-                    <span class="post-link" th:text="${member.postCount}" th:if="${member.postCount > 0}"
-                          th:data-member-id="${member.memberId}"
-                          data-bs-toggle="modal" data-bs-target="#postModal"></span>
-                    <span th:if="${member.postCount == 0}" th:text="${member.postCount}"></span>
-                </td>
-                <td th:text="${member.commentCount}"></td>
+                <td th:text="${member.password}"></td>
                 <td>
                     <!-- ADMIN 권한이 있을 경우 -->
                     <div sec:authorize="hasRole('ADMIN')">
@@ -148,37 +132,7 @@
     </div>
 </div>
 
-<!-- 게시글 목록을 보여줄 모달 -->
-<div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="postModalLabel">작성한 게시글</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>번호</th>
-                        <th>제목</th>
-                        <th>작성일</th>
-                    </tr>
-                    </thead>
-                    <tbody id="postList">
-                    <!-- 게시글 목록이 여기에 동적으로 추가됩니다. -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Bootstrap JS Bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     function updateRole(button, url) {
         const container = button.closest('div');
@@ -194,77 +148,32 @@
         const token = document.querySelector("meta[name='_csrf']").getAttribute("content");
         const header = document.querySelector("meta[name='_csrf_header']").getAttribute("content");
 
-        fetch(url, {
+        fetch(url, { // 하드코딩된 URL 대신 인자로 받은 url 사용
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                [header]: token
+                [header]: token // CSRF 토큰을 헤더에 추가
             },
             body: JSON.stringify(data)
         })
             .then(response => {
+                // 응답이 성공이 아니면, 응답 본문을 텍스트로 읽어 에러를 발생시킴
                 if (!response.ok) {
                     return response.text().then(text => { throw new Error(text || '서버 응답이 올바르지 않습니다.') });
                 }
-                return response.text();
+                return response.text(); // 성공 응답의 본문을 텍스트로 읽음
             })
             .then(text => {
-                alert(text);
-                location.reload();
+                alert(text); // 성공 메시지 표시
+                location.reload(); // 성공 시 페이지 새로고침하여 변경사항 반영
             })
             .catch(error => {
                 console.error('Error:', error);
                 alert('오류가 발생했습니다: ' + error.message);
             });
     }
-
-    // 모달이 표시될 때 이벤트를 수신하여 게시글 목록을 로드합니다.
-    const postModal = document.getElementById('postModal');
-    postModal.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget; // 모달을 트리거한 버튼
-        const memberId = button.getAttribute('data-member-id');
-        const postListBody = document.getElementById('postList');
-        postListBody.innerHTML = '<tr><td colspan="3" class="text-center">로딩 중...</td></tr>'; // 로딩 표시
-
-        // CSRF 토큰 가져오기
-        const token = document.querySelector("meta[name='_csrf']").getAttribute("content");
-        const header = document.querySelector("meta[name='_csrf_header']").getAttribute("content");
-
-        // 서버에 해당 회원의 게시글 목록을 요청합니다.
-        // TODO: Controller에 '/member/posts/{memberId}' 엔드포인트를 구현해야 합니다.
-        fetch(`/BuyBike/member/posts/${memberId}`, {
-            headers: {
-                [header]: token
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('게시글을 불러오는 데 실패했습니다.');
-                }
-                return response.json();
-            })
-            .then(posts => {
-                postListBody.innerHTML = ''; // 기존 내용 삭제
-                if (posts.length === 0) {
-                    postListBody.innerHTML = '<tr><td colspan="3" class="text-center">작성한 게시글이 없습니다.</td></tr>';
-                    return;
-                }
-                posts.forEach(post => {
-                    const regDate = new Date(post.regDate).toLocaleDateString();
-                    const row = `<tr>
-                                <td>${post.boardId}</td>
-                                <td><a href="/BuyBike/board/detail/${post.boardId}">${post.title}</a></td>
-                                <td>${regDate}</td>
-                             </tr>`;
-                    postListBody.insertAdjacentHTML('beforeend', row);
-                });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                postListBody.innerHTML = `<tr><td colspan="3" class="text-center">${error.message}</td></tr>`;
-            });
-    });
 </script>
+
 
 </body>
 </html>

@@ -1,12 +1,13 @@
 package com.buybike.app.controller;
 
+import com.buybike.app.config.CustomUserDetails;
 import com.buybike.app.domain.Member;
 import com.buybike.app.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +25,7 @@ public class HomeController {
             return "welcome";
         }  // 인증 전 처리
         // 인증 후 처리
-        User user = (User) authentication.getPrincipal();
+        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal(); // 수정된 코드
         String userId = user.getUsername();
         if (userId == null)
             return "redirect:/login";
