@@ -105,27 +105,6 @@ public class MemberController {
         return "member/updateMember";
     }
 
-
-    /**
-     * 특정 회원이 작성한 게시글 목록을 반환합니다. (AJAX 요청 처리)
-     * @param memberId 회원 아이디
-     * @return 게시글 목록 (JSON)
-     */
-    @GetMapping("/posts/{memberId}")
-    @ResponseBody
-    public ResponseEntity<List<Board>> getPostsByMember(@PathVariable("memberId") String memberId) {
-        try {
-            // BoardService를 통해 memberId로 게시글 목록 조회
-            List<Board> posts = boardService.getPostsByMemberId(memberId);
-            return ResponseEntity.ok(posts);
-        } catch (Exception e) {
-            log.error("Error fetching posts for memberId: {}", memberId, e);
-            // 오류 발생 시 서버 내부 오류 응답 반환
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
-
     // 회원 정보 수정하기(Form 방식)
     @PostMapping(value = "/update")
     public String submitUpdateMember(@Valid MemberFormDto memberFormDto, BindingResult bindingResult, Model model, Authentication authentication) {
@@ -213,5 +192,26 @@ public class MemberController {
     @GetMapping
     public String requestMain() {
         return "redirect:/";
+    }
+
+
+
+    /**
+     * 특정 회원이 작성한 게시글 목록을 반환합니다. (AJAX 요청 처리)
+     * @param memberId 회원 아이디
+     * @return 게시글 목록 (JSON)
+     */
+    @GetMapping("/posts/{memberId}")
+    @ResponseBody
+    public ResponseEntity<List<Board>> getPostsByMember(@PathVariable("memberId") String memberId) {
+        try {
+            // BoardService를 통해 memberId로 게시글 목록 조회
+            List<Board> posts = boardService.getPostsByMemberId(memberId);
+            return ResponseEntity.ok(posts);
+        } catch (Exception e) {
+            log.error("Error fetching posts for memberId: {}", memberId, e);
+            // 오류 발생 시 서버 내부 오류 응답 반환
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

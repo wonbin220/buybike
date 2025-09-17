@@ -70,7 +70,7 @@
                 </td>
                 <td th:text="${member.memberName}"></td>
                 <td th:text="${member.email}"></td>
-                <td th:text="${#temporals.format(member.regDate, 'yyyy-MM-dd')}"></td>
+                <td th:text="${#temporals.format(member.regDt, 'yyyy-MM-dd')}"></td>
                 <td>
                     <span class="post-link" th:text="${member.postCount}" th:if="${member.postCount > 0}"
                           th:data-member-id="${member.memberId}"
@@ -163,6 +163,7 @@
                         <th>번호</th>
                         <th>제목</th>
                         <th>작성일</th>
+                        <th>조회수</th>
                     </tr>
                     </thead>
                     <tbody id="postList">
@@ -249,12 +250,18 @@
                     postListBody.innerHTML = '<tr><td colspan="3" class="text-center">작성한 게시글이 없습니다.</td></tr>';
                     return;
                 }
-                posts.forEach(post => {
-                    const regDate = new Date(post.regDate).toLocaleDateString();
+                posts.forEach(board => {
+                    // createdAt을 Date 객체로 변환
+                    const date = new Date(board.createdAt);
+                    // yyyy-mm-dd 형식으로 포맷팅
+                    const formattedDate = date.getFullYear() + '-' +
+                        String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                        String(date.getDate()).padStart(2, '0');
+
                     const row = `<tr>
-                                <td>${post.boardId}</td>
-                                <td><a href="/BuyBike/board/detail/${post.boardId}">${post.title}</a></td>
-                                <td>${regDate}</td>
+                                <td>${board.no}</td>
+                                <td><a href="/BuyBike/board/${board.no}">${board.title}</a></td>
+                                <td>${formattedDate}</td>
                              </tr>`;
                     postListBody.insertAdjacentHTML('beforeend', row);
                 });

@@ -19,8 +19,6 @@
         WHERE num = #{num}
     </select>
 
-
-
     <insert id="insert" parameterType="com.buybike.app.domain.Member" useGeneratedKeys="true" keyProperty="num">
         INSERT INTO member
             (memberId, memberName, password, phone, email, address, regDt, role)
@@ -44,5 +42,21 @@
     <delete id="deleteById" parameterType="com.buybike.app.domain.Member">
         DELETE FROM member WHERE memberId = #{memberId}
     </delete>
+
+    <select id="findAllWithCounts" resultType="com.buybike.app.domain.Member">
+        SELECT
+            m.num,
+            m.memberId,
+            m.memberName,
+            m.email,
+            m.regDt,
+            m.role,
+            (SELECT COUNT(*) FROM board b WHERE b.memberId = m.memberId) AS post_count,
+            (SELECT COUNT(*) FROM comment c WHERE c.writer_Id = m.memberId) AS comment_count
+        FROM
+            member m
+        ORDER BY
+            m.num DESC
+    </select>
 
 </mapper>

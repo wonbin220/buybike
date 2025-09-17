@@ -2,6 +2,7 @@ package com.buybike.app.repository;
 
 import com.buybike.app.domain.Board;
 import com.buybike.app.domain.Member;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -22,5 +23,7 @@ public interface MemberMapper {
      int update(Member member);
      int deleteById(@Param("memberId") String memberId);
 
+    // 회원 목록 조회 (게시글 수, 댓글 수 포함)
+    Page<Member> findAllWithCounts();
 
 }

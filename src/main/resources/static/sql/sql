@@ -8,6 +8,8 @@ email varchar(100),
 address varchar(200),
 regDt datetime default now(),
 role ENUM('ADMIN','OPERATOR', 'USER') not null default 'USER'
+postCount int default 0,
+commentCount int default 0
 );
 
 
@@ -21,6 +23,7 @@ CREATE Table `board` (
     `updated_at`    TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
                                             ON UPDATE CURRENT_TIMESTAMP
                                                                 COMMENT '수정일자',
+    'comment_count' INT defalut 0                   COMMENT '댓글수',
    foreign key(memberId) references member(memberId)
 ) COMMENT '게시글';
 

@@ -26,6 +26,10 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role; // 사용자 권한 (USER, ADMIN, OPERATOR)
 
+    // 게시글 수와 댓글 수를 저장할 필드 추가
+    private int postCount;
+    private int commentCount;
+
     public static Member createMember(MemberFormDto memberFormDto, PasswordEncoder passwordEncoder) {
         Member member = new Member();
         member.setMemberId(memberFormDto.getMemberId());

@@ -107,7 +107,8 @@ public class MemberService implements UserDetailsService {
     public PageInfo<Member> page(int page, int size) throws Exception {
         // PageHelper.startPage(page, size); (현재번호, 페이지당 데이터 수)
         PageHelper.startPage(page, size);
-        List<Member> list = memberMapper.list();
+//        List<Member> list = memberMapper.list();
+        List<Member> list = memberMapper.findAllWithCounts();
 
         // PageInfo(리스트, 노출 페이지 수)
         PageInfo<Member> pageInfo = new PageInfo<>(list, 10);
