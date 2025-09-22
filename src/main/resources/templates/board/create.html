@@ -14,6 +14,12 @@
 
 <form th:action="@{/board/create}" method="post" th:object="${boardFormDto}"  onsubmit="return submitContents();" enctype="multipart/form-data" >
     <table style="width: 80%; height: 500px; border: 1px solid black;">
+        <tr sec:authorize="hasRole('ADMIN')">
+            <th>상단 고정</th>
+            <td>
+                <input type="checkbox" name="isNotice" th:field="*{isNotice}">
+            </td>
+        </tr>
         <tr>
             <th>제목</th>
             <td>

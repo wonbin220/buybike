@@ -66,14 +66,14 @@ public class BoardService {
     }
 
     // PageHelper를 사용한 페이징 처리
-    public PageInfo<Board> page(int page, int size) throws Exception {
-        // PageHelper.startPage(page, size); (현재번호, 페이지당 데이터 수)
+    public PageInfo<Board> page(int page, int size, String category) throws Exception {
         PageHelper.startPage(page, size);
-        List<Board> list = boardMapper.list();
+        List<Board> list = boardMapper.listByCategory(category);
+        return new PageInfo<>(list, 10);
+    }
 
-        // PageInfo(리스트, 노출 페이지 수)
-        PageInfo<Board> pageInfo = new PageInfo<>(list, 10);
-        return pageInfo;
+    public List<Board> findNotices() {
+        return boardMapper.findNotices();
     }
 
     /**

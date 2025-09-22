@@ -49,6 +49,12 @@ public interface BoardMapper {
     // 게시글 ID로 조회
     public Board findById(String id) throws Exception;
 
+    // 카테고리별 게시글 목록 조회
+    List<Board> listByCategory(String category);
+
+    // 공지사항 목록 조회
+    List<Board> findNotices();
+
     /**
      * 특정 회원이 작성한 게시글 목록을 조회합니다.
      * @param memberId 회원 아이디
@@ -56,5 +62,3 @@ public interface BoardMapper {
      */
     List<Board> getPostsByMemberId(String memberId);
 }
-
-

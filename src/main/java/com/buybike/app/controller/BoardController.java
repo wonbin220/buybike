@@ -20,6 +20,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
+
 @Slf4j
 @Controller
 @RequestMapping("/board")
@@ -117,17 +119,26 @@ public class BoardController {
 //
 
     @GetMapping("/list")
-    public String list(Model model, Pagination pagination) throws Exception {
+    public String list(Model model, Pagination pagination,
+                       @RequestParam(value = "category", defaultValue = "all") String category) throws Exception {
         int page = (int) pagination.getPage();
         int size = (int) pagination.getSize();
-        PageInfo<Board> pageInfo = boardService.page(page, size);
+
+        // 상단 고정 공지 목록 (최대 3개)
+        List<Board> noticeList = boardService.findNotices();
+        model.addAttribute("noticeList", noticeList);
+
+        // 페이징된 게시글 목록 (카테고리별)
+        PageInfo<Board> pageInfo = boardService.page(page, size, category);
         log.info("pageInfo: {}", pageInfo);
         model.addAttribute("pageInfo", pageInfo);
+        model.addAttribute("category", category); // 현재 카테고리 모델에 추가
 
         // Uri 빌더
         String pageUri = UriComponentsBuilder.fromPath("/board/list")
                 .queryParam("size", pageInfo.getSize())
                 .queryParam("count", pageInfo.getPageSize())
+                .queryParam("category", category) // 카테고리 파라미터 추가
                 .build()
                 .toUriString();
 
@@ -268,6 +279,3 @@ public class BoardController {
         }
     }
 }
-
-
-

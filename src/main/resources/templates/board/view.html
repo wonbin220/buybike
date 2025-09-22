@@ -41,6 +41,12 @@
             <col style="width: 85%;">
         </colgroup>
         <tbody>
+        <tr sec:authorize="hasRole('ADMIN')" th:if="${board.isNotice()}">
+            <th>상단 고정</th>
+            <td>
+                <input type="checkbox" name="isNotice" th:checked="${board.isNotice}" disabled>
+            </td>
+        </tr>
         <tr>
             <th>제목</th>
             <!--/* th:text를 사용하여 객체의 title 필드 값을 출력 */-->

@@ -20,16 +20,20 @@
     <div class="container my-5 py-5">
         <h1 class="text-center">게시판 글 목록</h1>
         <div class="d-flex justify-content-between align-items-center my-3" >
-            <div></div>
+            <div>
+                <div class="btn-group">
+                    <a th:href="@{/board/list(category='all')}" class="btn" th:classappend="${category == 'all' || category == null} ? 'btn-primary' : 'btn-outline-primary'">전체</a>
+                    <a th:href="@{/board/list(category='notice')}" class="btn" th:classappend="${category == 'notice'} ? 'btn-primary' : 'btn-outline-primary'">공지</a>
+                    <a th:href="@{/board/list(category='general')}" class="btn" th:classappend="${category == 'general'} ? 'btn-primary' : 'btn-outline-primary'">일반글</a>
+                </div>
+            </div>
             <div>
                 <select class="form-select" aria-label="Default select example"
-                        th:field="${pageInfo.size}"
-                        th:onchange="|location.href='@{/board/list(page=${pageInfo.pageNum})}&size=' + this.value|">
-                    <option value="5" >5 개씩 보기</option>
-                    <option value="10" >10 개씩 보기</option>
-                    <option value="30" >30 개씩 보기</option>
-                    <option value="50" >50 개씩 보기</option>
-                    <option value="100" >100 개씩 보기</option>
+                        onchange="location.href=this.value">
+                    <option th:each="size : ${#numbers.sequence(5, 20, 5)}"
+                            th:value="@{/board/list(page=${pageInfo.pageNum}, size=${size}, category=${category})}"
+                            th:text="${size} + ' 개씩 보기'"
+                            th:selected="${pageInfo.size == size}"></option>
                 </select>
             </div>
         </div>
@@ -45,6 +49,25 @@
             </tr>
             </thead>
             <tbody>
+            <!-- 공지 목록 -->
+            <th:block th:each="notice : ${noticeList}">
+                <tr class="table-light">
+                    <td><span class="badge bg-success">공지</span></td>
+                    <td>
+                        <a th:href="@{/board/{no}(no=${notice.no})}">
+                            <span th:text="${notice.title}"></span>
+                            <span th:if="${notice.commentCount > 0}"
+                                  th:text="'[' + ${notice.commentCount} + ']'"
+                                  class="text-primary" style="font-size: 0.9rem; margin-left: 5px;">
+                            </span>
+                        </a>
+                    </td>
+                    <td><th:block th:text="${notice.memberId}"></th:block></td>
+                    <td><th:block th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd')}"></th:block></td>
+                    <td><th:block th:text="${#temporals.format(notice.updatedAt, 'yyyy-MM-dd')}"></th:block></td>
+                </tr>
+            </th:block>
+
             <th:block th:if="${ pageInfo.list == null || pageInfo.list.isEmpty() }">
                 <tr>
                     <td colspan="5" class="text-center">조회된 데이터가 없습니다.</td>
@@ -64,8 +87,8 @@
                         </a>
                     </td>
                     <td><th:block th:text="${board.memberId}"></th:block></td>
-                    <td><th:block th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm:ss') }"></th:block></td>
-                    <td><th:block th:text="${#temporals.format(board.updatedAt, 'yyyy-MM-dd HH:mm:ss') }"></th:block></td>
+                    <td><th:block th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd')}"></th:block></td>
+                    <td><th:block th:text="${#temporals.format(board.updatedAt, 'yyyy-MM-dd')}"></th:block></td>
                 </tr>
             </th:block>
             </tbody>
@@ -96,18 +119,18 @@
                 <!-- [번호] -->
                 <th:block th:each="page : ${#numbers.sequence( pageInfo.navigateFirstPage, pageInfo.navigateLastPage )}">
                     <li class="page-item" th:classappend="${pageInfo.pageNum == page} ? 'active' : '' ">
-                        <a class="page-link" th:href="@{${pageUri} + '&page=' + ${page}}" th:text="${page}">1</a>
+                        <a class="page-link" th:href="@{/board/list(page=${page}, size=${pageInfo.size}, category=${category})}" th:text="${page}">1</a>
                     </li>
                 </th:block>
                 <!-- [다음] -->
                 <li class="page-item" th:if="${pageInfo.pageNum != pageInfo.navigateLastPage}">
-                    <a class="page-link" th:href="@{${pageUri} + '&page=' + ${pageInfo.nextPage} }" aria-label="Next">
+                    <a class="page-link" th:href="@{/board/list(page=${pageInfo.nextPage}, size=${pageInfo.size}, category=${category})}" aria-label="Next">
                         <span aria-hidden="true">&rsaquo;</span>
                     </a>
                 </li>
                 <!-- [마지막] -->
                 <li class="page-item">
-                    <a class="page-link" th:href="@{${pageUri} + '&page=' + ${pageInfo.pages} }" aria-label="Last">
+                    <a class="page-link" th:href="@{/board/list(page=${pageInfo.pages}, size=${pageInfo.size}, category=${category})}" aria-label="Last">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>

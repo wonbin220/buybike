@@ -44,6 +44,7 @@
             b.memberId AS memberId,
             b.created_at AS createdAt,
             b.updated_at AS updatedAt,
+            b.is_notice as isNotice,
 --             b.hits,
             (SELECT COUNT(*) FROM comment c WHERE c.board_no = b.no AND c.is_deleted = FALSE) AS commentCount
         FROM
@@ -65,7 +66,6 @@
         SELECT *
         FROM board
         WHERE no = #{no}
-        ORDER BY no DESC
     </select>
 
     <!-- 게시글 목록 조회를 위한 select 구문 -->
@@ -76,6 +76,7 @@
         b.memberId AS memberId,
         b.created_at AS createdAt,
         b.updated_at AS updatedAt,
+        b.is_notice as isNotice,
         (SELECT COUNT(*) FROM comment c WHERE c.board_no = b.no AND c.is_deleted = FALSE) AS commentCount
         FROM
         board b
@@ -85,16 +86,16 @@
 
     <!-- 등록 -->
     <insert id="insert">
-        INSERT INTO board ( title, memberId, content )
-        VALUES ( #{title}, #{memberId}, #{content} )
+        INSERT INTO board ( title, memberId, content, is_notice )
+        VALUES ( #{title}, #{memberId}, #{content}, #{isNotice} )
     </insert>
 
     <!-- 수정 -->
     <update id="update">
         UPDATE board
         SET title = #{title}
-          ,memberId = #{memberId}
           ,content = #{content}
+          ,is_notice = #{isNotice}
         WHERE no = #{no}
     </update>
 
@@ -116,13 +117,62 @@
             id,
             title,
             created_at,
-            comment_count
+            comment_count,
+            is_notice as isNotice
         FROM
             board
         WHERE
             memberId = #{memberId}
         ORDER BY
             id DESC
+    </select>
+
+    <!-- 카테고리별 게시글 목록 조회 -->
+    <select id="listByCategory" resultType="com.buybike.app.domain.Board">
+        SELECT
+        b.no,
+        b.title,
+        b.memberId AS memberId,
+        b.created_at AS createdAt,
+        b.updated_at AS updatedAt,
+        b.is_notice AS isNotice,
+        (SELECT COUNT(*) FROM comment c WHERE c.board_no = b.no AND c.is_deleted = FALSE) AS commentCount
+        FROM
+        board b
+        <where>
+            <choose>
+                <when test="category == 'notice'">
+                    AND b.is_notice = TRUE
+                </when>
+                <when test="category == 'general'">
+                    AND b.is_notice = FALSE
+                </when>
+                <otherwise>
+                    AND b.is_notice = FALSE
+                </otherwise>
+            </choose>
+        </where>
+        ORDER BY
+        b.no DESC
+    </select>
+
+    <!-- 공지사항 목록 조회 (최대 3개) -->
+    <select id="findNotices" resultType="com.buybike.app.domain.Board">
+        SELECT
+        b.no,
+        b.title,
+        b.memberId AS memberId,
+        b.created_at AS createdAt,
+        b.updated_at AS updatedAt,
+        b.is_notice AS isNotice,
+        (SELECT COUNT(*) FROM comment c WHERE c.board_no = b.no AND c.is_deleted = FALSE) AS commentCount
+        FROM
+        board b
+        WHERE
+        b.is_notice = TRUE
+        ORDER BY
+        b.no DESC
+        LIMIT 3
     </select>
 
 

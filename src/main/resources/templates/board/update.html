@@ -17,6 +17,12 @@
             enctype="multipart/form-data">
         <input type="hidden" th:field="*{no}">
         <table style="height: 500px; width: 80%; border: 1px solid #000000" >
+            <tr sec:authorize="hasRole('ADMIN')">
+                <th>상단 고정</th>
+                <td>
+                    <input type="checkbox" name="isNotice" th:field="*{isNotice}">
+                </td>
+            </tr>
             <tr>
                 <td>제목</td>
                 <td>
