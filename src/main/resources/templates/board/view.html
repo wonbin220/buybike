@@ -41,10 +41,10 @@
             <col style="width: 85%;">
         </colgroup>
         <tbody>
-        <tr sec:authorize="hasRole('ADMIN')" th:if="${board.isNotice()}">
+        <tr sec:authorize="hasRole('ADMIN')" th:if="${board.notice()}">
             <th>상단 고정</th>
             <td>
-                <input type="checkbox" name="isNotice" th:checked="${board.isNotice}" disabled>
+                <input type="checkbox" name="notice" th:checked="${board.notice}" disabled>
             </td>
         </tr>
         <tr>

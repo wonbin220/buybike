@@ -31,7 +31,7 @@ public class Board {
     private String fileName;
     private MultipartFile boardImage; // 게시판 이미지
     private int commentCount; // 댓글 수를 저장할 필드
-    private boolean isNotice;// 공지글 여부
+    private boolean notice;// 공지글 여부
 
     public Board() {
         this.id = UUID.randomUUID().toString();

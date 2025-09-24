@@ -76,7 +76,7 @@
         b.memberId AS memberId,
         b.created_at AS createdAt,
         b.updated_at AS updatedAt,
-        b.is_notice as isNotice,
+        b.notice,
         (SELECT COUNT(*) FROM comment c WHERE c.board_no = b.no AND c.is_deleted = FALSE) AS commentCount
         FROM
         board b
@@ -86,8 +86,8 @@
 
     <!-- 등록 -->
     <insert id="insert">
-        INSERT INTO board ( title, memberId, content, is_notice )
-        VALUES ( #{title}, #{memberId}, #{content}, #{isNotice} )
+        INSERT INTO board ( title, memberId, content, notice )
+        VALUES ( #{title}, #{memberId}, #{content}, #{notice} )
     </insert>
 
     <!-- 수정 -->
@@ -95,7 +95,7 @@
         UPDATE board
         SET title = #{title}
           ,content = #{content}
-          ,is_notice = #{isNotice}
+          ,notice = #{notice}
         WHERE no = #{no}
     </update>
 
@@ -118,7 +118,7 @@
             title,
             created_at,
             comment_count,
-            is_notice as isNotice
+            notice
         FROM
             board
         WHERE
@@ -135,20 +135,20 @@
         b.memberId AS memberId,
         b.created_at AS createdAt,
         b.updated_at AS updatedAt,
-        b.is_notice AS isNotice,
+        b.notice,
         (SELECT COUNT(*) FROM comment c WHERE c.board_no = b.no AND c.is_deleted = FALSE) AS commentCount
         FROM
         board b
         <where>
             <choose>
                 <when test="category == 'notice'">
-                    AND b.is_notice = TRUE
+                    AND b.notice = TRUE
                 </when>
                 <when test="category == 'general'">
-                    AND b.is_notice = FALSE
+                    AND b.notice = FALSE
                 </when>
                 <otherwise>
-                    AND b.is_notice = FALSE
+                    AND b.notice = FALSE
                 </otherwise>
             </choose>
         </where>
@@ -164,12 +164,12 @@
         b.memberId AS memberId,
         b.created_at AS createdAt,
         b.updated_at AS updatedAt,
-        b.is_notice AS isNotice,
+        b.notice,
         (SELECT COUNT(*) FROM comment c WHERE c.board_no = b.no AND c.is_deleted = FALSE) AS commentCount
         FROM
         board b
         WHERE
-        b.is_notice = TRUE
+        b.notice = TRUE
         ORDER BY
         b.no DESC
         LIMIT 3

@@ -23,7 +23,7 @@ public class BoardFormDto {
     private String fileName; // 업로드된 파일 이름
     private MultipartFile boardImage; // 게시판 이미지 URL
     private int commentCount; // [추가] 댓글 수를 저장할 필드
-    private boolean isNotice; // [추가] 공지글 여부
+    private boolean notice; // [추가] 공지글 여부
 
     public Board toEntity() {
         Board build = Board.builder()
@@ -37,7 +37,7 @@ public class BoardFormDto {
                 .fileName(fileName)
                 .boardImage(boardImage)
                 .commentCount(commentCount)
-                .isNotice(isNotice) // [추가]
+                .notice(notice) // [추가]
                 .build();
         return build;
     }
